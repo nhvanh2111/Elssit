@@ -30,6 +30,10 @@ class ColorConstant {
 
   static Color primaryColor = fromHex('5CB85C');
 
+  static Color redErrorText = fromHex('#c53530');
+
+  static Color yellowButton = fromHex("FBCC16");
+
   static Color fromHex(String hexString) {
     final buffer = StringBuffer();
     if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');

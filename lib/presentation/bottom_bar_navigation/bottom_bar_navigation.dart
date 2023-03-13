@@ -1,5 +1,6 @@
 
 import 'package:elssit/presentation/account_screen/account_screen.dart';
+import 'package:elssit/presentation/request_screen/request_screen.dart';
 
 import 'package:elssit/presentation/schedule_screen/schedule_screen.dart';
 
@@ -36,7 +37,7 @@ class _BottomBarNavigationState extends State<BottomBarNavigation> {
       case 0:
         return const SplashScreen();
       case 1:
-        return const SplashScreen();
+        return const RequestScreen();
       case 2:
         return const ScheduleScreen();
       case 3:

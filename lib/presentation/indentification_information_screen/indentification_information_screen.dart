@@ -1,16 +1,19 @@
-import 'dart:io';
+import 'dart:io'; 
 
-import 'package:dotted_border/dotted_border.dart';
-import 'package:elssit/presentation/indentification_information_screen/widgets/qr_view.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:elssit/core/utils/my_utils.dart';
 import 'package:flutter/Material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:dotted_border/dotted_border.dart';
 
 import '../../core/utils/color_constant.dart';
 import '../../core/utils/image_constant.dart';
 import '../../core/utils/globals.dart' as globals;
+import 'package:firebase_storage/firebase_storage.dart';
+
+import 'package:elssit/presentation/indentification_information_screen/widgets/qr_view.dart';
+import 'package:elssit/process/bloc/sitter_bloc.dart';
+import 'package:elssit/process/event/sitter_event.dart';
 
 class IndentificationInformationScreen extends StatefulWidget {
   const IndentificationInformationScreen({Key? key}) : super(key: key);
@@ -22,93 +25,95 @@ class IndentificationInformationScreen extends StatefulWidget {
 
 class _IndentificationInformationScreenState
     extends State<IndentificationInformationScreen> {
-  late var _fullnameController = TextEditingController();
+  late var _fullNameController = TextEditingController();
   late var _dobController = TextEditingController();
   late var _genderController = TextEditingController();
   late var _idNumberController = TextEditingController();
-  bool _isAddFace = false;
+  bool _isAddAvatar = false;
+  final _sitBloc = SitBloc();
 
-  //Face img
-  String faceImage = "";
-  late File imageFileFace;
-  XFile? pickedFileFace;
-  UploadTask? uploadTaskFace;
+  //Avatar Img
+  String avatarImage = "";
+  late File imageFileAvatar;
+  XFile? pickedFileAvatar;
+  UploadTask? uploadTaskAvatar;
 
-  //IDCard front img
-  String idCardFront = "";
-  late File imageFileIDCardFront;
-  XFile? pickedFileIDCardFront;
-  UploadTask? uploadTaskIDCardFront;
-  bool isIDCardFrontCheck = false;
+  //Front Card Img
+  String FrontCardImg = "";
+  late File imageFileFrontCardImg;
+  XFile? pickedFileFrontCardImg;
+  UploadTask? uploadTaskFrontCardImg;
+  bool isFrontCardImgCheck = false;
 
-  //IDCard back img
-  String idCardBack = "";
-  late File imageFileIDCardBack;
-  XFile? pickedFileIDCardBack;
-  UploadTask? uploadTaskIDCardBack;
-  bool isIDCardBackCheck = false;
+  //Back Card Img
+  String BackCardImg = "";
+  late File imageFileBackCardImg;
+  XFile? pickedFileBackCardImg;
+  UploadTask? uploadTaskBackCardImg;
+  bool isBackCardImgCheck = false;
 
-  _getFaceImageFromGallery() async {
-    pickedFileFace = (await ImagePicker().pickImage(
+  _getavatarImageFromGallery() async {
+    pickedFileAvatar = (await ImagePicker().pickImage(
       source: ImageSource.camera,
     ));
-    if (pickedFileFace != null) {
+    if (pickedFileAvatar != null) {
       setState(() {
-        imageFileFace = File(pickedFileFace!.path);
+        imageFileAvatar = File(pickedFileAvatar!.path);
       });
     }
-    _isAddFace = true;
-    final path = 'els_sitter_images/${pickedFileFace!.name}';
-    final file = File(pickedFileFace!.path);
+    _isAddAvatar = true;
+    final path = 'els_sitter_images/${pickedFileAvatar!.name}';
+    final file = File(pickedFileAvatar!.path);
     final ref = FirebaseStorage.instance.ref().child(path);
-    uploadTaskFace = ref.putFile(file);
+    uploadTaskAvatar = ref.putFile(file);
 
-    final snapshot = await uploadTaskFace!.whenComplete(() {});
+    final snapshot = await uploadTaskAvatar!.whenComplete(() {});
     final urlDownload = await snapshot.ref.getDownloadURL();
-    faceImage = urlDownload;
-    print('Download link Face: $urlDownload');
-  }
-
-  _getIDCardFrontImageFromGallery() async {
-    pickedFileIDCardFront = (await ImagePicker().pickImage(
-      source: ImageSource.camera,
-    ));
-    if (pickedFileIDCardFront != null) {
-      setState(() {
-        imageFileIDCardFront = File(pickedFileIDCardFront!.path);
-        isIDCardFrontCheck = true;
-      });
-    }
-    final path = 'els_sitter_images/${pickedFileIDCardFront!.name}';
-    final file = File(pickedFileIDCardFront!.path);
-    final ref = FirebaseStorage.instance.ref().child(path);
-    uploadTaskIDCardFront = ref.putFile(file);
-
-    final snapshot = await uploadTaskIDCardFront!.whenComplete(() {});
-    final urlDownload = await snapshot.ref.getDownloadURL();
-    idCardFront = urlDownload;
-    print('Download link IDCardFront: $urlDownload');
+    avatarImage = urlDownload;
+    _sitBloc.eventController.sink
+        .add(AvatarImgSitEvent(avatarImg: avatarImage));
   }
 
   _getIDCardBackImageFromGallery() async {
-    pickedFileIDCardFront = (await ImagePicker().pickImage(
+    pickedFileBackCardImg = (await ImagePicker().pickImage(
       source: ImageSource.camera,
     ));
-    if (pickedFileIDCardBack != null) {
+    if (pickedFileBackCardImg != null) {
       setState(() {
-        imageFileIDCardBack = File(pickedFileIDCardBack!.path);
-        isIDCardBackCheck = true;
+        imageFileBackCardImg = File(pickedFileBackCardImg!.path);
+        isBackCardImgCheck = true;
       });
     }
-    final path = 'els_sitter_images/${pickedFileIDCardBack!.name}';
-    final file = File(pickedFileIDCardBack!.path);
+    final path = 'els_sitter_images/${pickedFileBackCardImg!.name}';
+    final file = File(pickedFileBackCardImg!.path);
     final ref = FirebaseStorage.instance.ref().child(path);
-    uploadTaskIDCardBack = ref.putFile(file);
 
-    final snapshot = await uploadTaskIDCardBack!.whenComplete(() {});
+    uploadTaskBackCardImg = ref.putFile(file);
+    final snapshot = await uploadTaskBackCardImg!.whenComplete(() {});
     final urlDownload = await snapshot.ref.getDownloadURL();
-    idCardBack = urlDownload;
-    print('Download link IDCardBack: $urlDownload');
+    BackCardImg = urlDownload;
+    _sitBloc.eventController.sink.add(BackCardImgSitEvent(backCardImg: BackCardImg));
+  }
+
+  _getIDCardFrontImageFromGallery() async {
+    pickedFileFrontCardImg = (await ImagePicker().pickImage(
+      source: ImageSource.camera,
+    ));
+    if (pickedFileFrontCardImg != null) {
+      setState(() {
+        imageFileFrontCardImg = File(pickedFileFrontCardImg!.path);
+      });
+    }
+    isFrontCardImgCheck = true;
+    final path = 'els_sitter_images/${pickedFileFrontCardImg!.name}';
+    final file = File(pickedFileFrontCardImg!.path);
+    final ref = FirebaseStorage.instance.ref().child(path);
+    uploadTaskFrontCardImg = ref.putFile(file);
+
+    final snapshot = await uploadTaskFrontCardImg!.whenComplete(() {});
+    final urlDownload = await snapshot.ref.getDownloadURL();
+    FrontCardImg = urlDownload;
+    _sitBloc.eventController.sink.add(FrontCardImgSitEvent(frontCardImg: FrontCardImg));
   }
 
   @override
@@ -117,10 +122,17 @@ class _IndentificationInformationScreenState
     super.initState();
     if (globals.idString != "") {
       List<String> listInfo = globals.idString.split("|");
-      _fullnameController = TextEditingController(text: listInfo[2]);
-      _dobController = TextEditingController(text: listInfo[3]);
+      _fullNameController = TextEditingController(text: listInfo[2]);
+      _sitBloc.eventController.sink
+          .add(FillFullNameSitEvent(fullName: listInfo[2]));
+      _dobController = TextEditingController(text: MyUtils().convertDOBFromIDCard(listInfo[3]));
+      _sitBloc.eventController.sink.add(FillDobSitEvent(dob: MyUtils().convertDOBFromIDCard(listInfo[3])));
       _genderController = TextEditingController(text: listInfo[4]);
+      _sitBloc.eventController.sink
+          .add(FillGenderSitEvent(gender: listInfo[4]));
       _idNumberController = TextEditingController(text: listInfo[0]);
+      _sitBloc.eventController.sink
+          .add(FillIdNumberSitEvent(idNumber: listInfo[0]));
     }
   }
 
@@ -130,7 +142,7 @@ class _IndentificationInformationScreenState
     final ThemeData theme = ThemeData();
 
     return StreamBuilder(
-      stream: null,
+      stream: _sitBloc.stateController.stream,
       builder: (context, snapshot) {
         return Material(
           child: Scaffold(
@@ -151,7 +163,7 @@ class _IndentificationInformationScreenState
               title: Padding(
                 padding: EdgeInsets.only(left: size.width * 0.005),
                 child: const Text(
-                  "Thông tin liên lạc",
+                  "Thông tin định danh",
                 ),
               ),
               titleTextStyle: GoogleFonts.roboto(
@@ -164,7 +176,10 @@ class _IndentificationInformationScreenState
               width: size.width * 0.9,
               height: size.height * 0.06,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  _sitBloc.eventController.sink
+                      .add(SaveInformationEvent(context: context));
+                },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
                     borderRadius:
@@ -195,7 +210,7 @@ class _IndentificationInformationScreenState
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    (!_isAddFace)
+                    (!_isAddAvatar)
                         ? Padding(
                             padding: EdgeInsets.only(
                               top: size.height * 0.03,
@@ -224,7 +239,7 @@ class _IndentificationInformationScreenState
                                       ),
                                       child: GestureDetector(
                                         onTap: () {
-                                          _getFaceImageFromGallery();
+                                          _getavatarImageFromGallery();
                                         },
                                         child: Image.asset(
                                           ImageConstant.icEditAvator,
@@ -250,7 +265,7 @@ class _IndentificationInformationScreenState
                                     ColorConstant.primaryColor.withOpacity(0.2),
                                 shape: BoxShape.circle,
                                 image: DecorationImage(
-                                  image: FileImage(imageFileFace),
+                                  image: FileImage(imageFileAvatar),
                                   fit: BoxFit.fill,
                                 ),
                               ),
@@ -265,7 +280,7 @@ class _IndentificationInformationScreenState
                                       ),
                                       child: GestureDetector(
                                         onTap: () {
-                                          _getFaceImageFromGallery();
+                                          _getavatarImageFromGallery();
                                         },
                                         child: Image.asset(
                                           ImageConstant.icEditAvator,
@@ -279,6 +294,28 @@ class _IndentificationInformationScreenState
                               ),
                             ),
                           ),
+                    (snapshot.hasError &&
+                            (snapshot.error as Map<String, String>)
+                                .containsKey("avatarImg"))
+                        ? SizedBox(
+                            width: size.width,
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                top: size.height * 0.02,
+                              ),
+                              child: Text(
+                                (snapshot.error
+                                    as Map<String, String>)["avatarImg"]!,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: ColorConstant.redFail,
+                                  fontSize: size.height * 0.016,
+                                  height: 0.01,
+                                ),
+                              ),
+                            ),
+                          )
+                        : const SizedBox(),
                     Padding(
                       padding: EdgeInsets.only(
                         top: size.height * 0.02,
@@ -306,6 +343,27 @@ class _IndentificationInformationScreenState
                         ),
                       ),
                     ),
+                    (snapshot.hasError &&
+                            (snapshot.error as Map<String, String>)
+                                .containsKey("qr"))
+                        ? SizedBox(
+                            width: size.width,
+                            child: Padding(
+                              padding: EdgeInsets.only(
+                                top: size.height * 0.02,
+                              ),
+                              child: Text(
+                                (snapshot.error as Map<String, String>)["qr"]!,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: ColorConstant.redErrorText,
+                                  fontSize: size.height * 0.016,
+                                  height: 0.01,
+                                ),
+                              ),
+                            ),
+                          )
+                        : const SizedBox(),
                     SizedBox(
                       height: size.height * 0.02,
                     ),
@@ -342,13 +400,10 @@ class _IndentificationInformationScreenState
                           ),
                           cursorColor: ColorConstant.primaryColor,
                           // ignore: unnecessary_null_comparison
-                          controller: (_fullnameController != null)
-                              ? _fullnameController
+                          controller: (_fullNameController != null)
+                              ? _fullNameController
                               : null,
-                          // onChanged: (value) {
-                          //   _authenBloc.eventController.sink.add(InputUserNameEvent(
-                          //       username: value.toString().trim()));
-                          // },
+
                           enabled: false,
 
                           decoration: InputDecoration(
@@ -406,10 +461,6 @@ class _IndentificationInformationScreenState
                           controller:
                               // ignore: unnecessary_null_comparison
                               (_dobController != null) ? _dobController : null,
-                          // onChanged: (value) {
-                          //   _authenBloc.eventController.sink.add(InputUserNameEvent(
-                          //       username: value.toString().trim()));
-                          // },
                           enabled: false,
                           decoration: InputDecoration(
                             hintText: "Ngày tháng năm sinh",
@@ -467,10 +518,6 @@ class _IndentificationInformationScreenState
                           controller: (_genderController != null)
                               ? _genderController
                               : null,
-                          // onChanged: (value) {
-                          //   _authenBloc.eventController.sink.add(InputUserNameEvent(
-                          //       username: value.toString().trim()));
-                          // },
                           enabled: false,
                           decoration: InputDecoration(
                             hintText: "Giới tính",
@@ -528,10 +575,6 @@ class _IndentificationInformationScreenState
                           controller: (_idNumberController != null)
                               ? _idNumberController
                               : null,
-                          // onChanged: (value) {
-                          //   _authenBloc.eventController.sink.add(InputUserNameEvent(
-                          //       username: value.toString().trim()));
-                          // },
                           enabled: false,
                           decoration: InputDecoration(
                             hintText: "Căn cước/ Chứng minh",
@@ -567,38 +610,97 @@ class _IndentificationInformationScreenState
                     SizedBox(
                       height: size.height * 0.02,
                     ),
-                    DottedBorder(
-                      color: Colors.grey.withOpacity(0.3),
-                      dashPattern: const [12, 8],
-                      strokeWidth: 1,
-                      borderType: BorderType.RRect,
-                      radius: Radius.circular(size.height * 0.02),
-                      padding: const EdgeInsets.all(0),
-                      borderPadding: const EdgeInsets.all(0),
-                      child: Container(
-                        width: size.width,
-                        height: size.height * 0.2,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.withOpacity(0.15),
-                          borderRadius:
-                              BorderRadius.circular(size.height * 0.02),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.upload_file_rounded,
-                              color:
-                                  ColorConstant.primaryColor.withOpacity(0.8),
-                              size: size.height * 0.05,
+                    (!isFrontCardImgCheck)
+                        ? DottedBorder(
+                            color: Colors.grey.withOpacity(0.3),
+                            dashPattern: const [12, 8],
+                            strokeWidth: 1,
+                            borderType: BorderType.RRect,
+                            radius: Radius.circular(size.height * 0.02),
+                            padding: const EdgeInsets.all(0),
+                            borderPadding: const EdgeInsets.all(0),
+                            child: Container(
+                              width: size.width,
+                              height: size.height * 0.2,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withOpacity(0.15),
+                                borderRadius:
+                                    BorderRadius.circular(size.height * 0.02),
+                              ),
+                              child: GestureDetector(
+                                onTap: () {
+                                  _getIDCardFrontImageFromGallery();
+                                },
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.upload_file_rounded,
+                                      color: ColorConstant.primaryColor
+                                          .withOpacity(0.8),
+                                      size: size.height * 0.05,
+                                    ),
+                                    const Text("Tải tệp lên"),
+                                  ],
+                                ),
+                              ),
                             ),
-                            const Text("Tải tệp lên"),
-                          ],
-                        ),
-                      ),
-                    ),
+                          )
+                        : DottedBorder(
+                            color: Colors.grey.withOpacity(0.3),
+                            dashPattern: const [12, 8],
+                            strokeWidth: 1,
+                            borderType: BorderType.RRect,
+                            radius: Radius.circular(size.height * 0.02),
+                            padding: const EdgeInsets.all(0),
+                            borderPadding: const EdgeInsets.all(0),
+                            child: Container(
+                              width: size.width,
+                              height: size.height * 0.2,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withOpacity(0.15),
+                                borderRadius:
+                                    BorderRadius.circular(size.height * 0.02),
+                                image: DecorationImage(
+                                    image: FileImage(imageFileFrontCardImg),
+                                    fit: BoxFit.fill),
+                              ),
+                              child: GestureDetector(
+                                onTap: () {
+                                  _getIDCardFrontImageFromGallery();
+                                },
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.upload_file_rounded,
+                                      color: ColorConstant.primaryColor
+                                          .withOpacity(0.8),
+                                      size: size.height * 0.05,
+                                    ),
+                                    const Text("Tải tệp lên"),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                    (snapshot.hasError &&
+                            (snapshot.error as Map<String, String>)
+                                .containsKey("frontCardImg"))
+                        ? Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              (snapshot.error
+                                  as Map<String, String>)["frontCardImg"]!,
+                              style: TextStyle(
+                                color: ColorConstant.redFail,
+                                fontSize: size.height * 0.017,
+                              ),
+                            ),
+                          )
+                        : const SizedBox(),
                     SizedBox(
                       height: size.height * 0.03,
                     ),
@@ -616,37 +718,97 @@ class _IndentificationInformationScreenState
                     SizedBox(
                       height: size.height * 0.02,
                     ),
-                    DottedBorder(
-                      color: Colors.grey.withOpacity(0.3),
-                      dashPattern: const [12, 8],
-                      strokeWidth: 1,
-                      borderType: BorderType.RRect,
-                      radius: Radius.circular(size.height * 0.02),
-                      padding: const EdgeInsets.all(0),
-                      borderPadding: const EdgeInsets.all(0),
-                      child: Container(
-                        width: size.width,
-                        height: size.height * 0.2,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.withOpacity(0.15),
-                          borderRadius:
-                              BorderRadius.circular(size.height * 0.02),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.upload_file_rounded,
-                              color:
-                                  ColorConstant.primaryColor.withOpacity(0.8),
-                              size: size.height * 0.05,
+                    (!isBackCardImgCheck)
+                        ? DottedBorder(
+                            color: Colors.grey.withOpacity(0.3),
+                            dashPattern: const [12, 8],
+                            strokeWidth: 1,
+                            borderType: BorderType.RRect,
+                            radius: Radius.circular(size.height * 0.02),
+                            padding: const EdgeInsets.all(0),
+                            borderPadding: const EdgeInsets.all(0),
+                            child: Container(
+                              width: size.width,
+                              height: size.height * 0.2,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withOpacity(0.15),
+                                borderRadius:
+                                    BorderRadius.circular(size.height * 0.02),
+                              ),
+                              child: GestureDetector(
+                                onTap: () {
+                                  _getIDCardBackImageFromGallery();
+                                },
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.upload_file_rounded,
+                                      color: ColorConstant.primaryColor
+                                          .withOpacity(0.8),
+                                      size: size.height * 0.05,
+                                    ),
+                                    const Text("Tải tệp lên"),
+                                  ],
+                                ),
+                              ),
                             ),
-                            const Text("Tải tệp lên"),
-                          ],
-                        ),
-                      ),
-                    ),
+                          )
+                        : DottedBorder(
+                            color: Colors.grey.withOpacity(0.3),
+                            dashPattern: const [12, 8],
+                            strokeWidth: 1,
+                            borderType: BorderType.RRect,
+                            radius: Radius.circular(size.height * 0.02),
+                            padding: const EdgeInsets.all(0),
+                            borderPadding: const EdgeInsets.all(0),
+                            child: Container(
+                              width: size.width,
+                              height: size.height * 0.2,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.withOpacity(0.15),
+                                borderRadius:
+                                    BorderRadius.circular(size.height * 0.02),
+                                image: DecorationImage(
+                                    image: FileImage(imageFileBackCardImg),
+                                    fit: BoxFit.fill),
+                              ),
+                              child: GestureDetector(
+                                onTap: () {
+                                  _getIDCardBackImageFromGallery();
+                                },
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.upload_file_rounded,
+                                      color: ColorConstant.primaryColor
+                                          .withOpacity(0.8),
+                                      size: size.height * 0.05,
+                                    ),
+                                    const Text("Tải tệp lên"),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                    (snapshot.hasError &&
+                            (snapshot.error as Map<String, String>)
+                                .containsKey("backCardImg"))
+                        ? Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              (snapshot.error
+                                  as Map<String, String>)["backCardImg"]!,
+                              style: TextStyle(
+                                color: ColorConstant.redFail,
+                                fontSize: size.height * 0.017,
+                              ),
+                            ),
+                          )
+                        : const SizedBox(),
                     SizedBox(
                       height: size.height * 0.1,
                     ),

@@ -31,4 +31,5 @@ class ImageConstant {
   static String icPersonalDetail = 'assets/images/personal_detail_ic.png';
   static String icEditAvator = 'assets/images/edit_avatar_ic.png';
   static String ic_logout = "assets/images/ic_logout.png";
+  static String icAva = "assets/images/ava_ic.png";
 }

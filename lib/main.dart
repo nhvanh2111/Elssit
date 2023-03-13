@@ -1,10 +1,18 @@
+import 'package:elssit/presentation/account_screen/account_screen.dart';
+import 'package:elssit/presentation/achievement_detail_screen/achievement_detail_screen.dart';
+import 'package:elssit/presentation/achievement_detail_screen/achievement_screen.dart';
+import 'package:elssit/presentation/achievement_detail_screen/add_new_achievement_screen.dart';
 import 'package:elssit/presentation/bottom_bar_navigation/bottom_bar_navigation.dart';
+import 'package:elssit/presentation/certification_detail_screen/add_new_certification_screen.dart';
+import 'package:elssit/presentation/certification_detail_screen/certification_detail_screen.dart';
+import 'package:elssit/presentation/certification_detail_screen/certification_screen.dart';
 import 'package:elssit/presentation/contact_detail_screen/contact_detail_screen.dart';
 import 'package:elssit/presentation/education_detail_screen/education_detail_screen.dart';
 import 'package:elssit/presentation/forgot_password_screen/forgot_password_screen.dart';
 import 'package:elssit/presentation/indentification_information_screen/indentification_information_screen.dart';
 import 'package:elssit/presentation/onboarding_screen/onboarding_screen.dart';
 import 'package:elssit/presentation/sign_up_screen/sign_up_screen.dart';
+import 'package:elssit/presentation/work_experience_screen/work_experience_detail_screen.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -171,6 +179,16 @@ class _MyAppState extends State<MyApp> {
                 const IndentificationInformationScreen(),
             '/educationDetailScreen': (context) =>
                 const EducationDetailScreen(),
+            '/certificationDetailScreen': (context) =>
+                const CertificationScreen(),
+            '/achievementDetailScreen': (context) => const AchievementScreen(),
+            '/addNewAchievementScreen': (context) =>
+                const AddNewAchievementScreen(),
+            '/addNewCertificationScreen': (context) =>
+                const AddNewCertificationScreen(),
+            '/workExperienceDetailScreen': (context) =>
+                const WorkExperienceDetailScreen(),
+            '/achievementScreen': (context) => const AchievementScreen(),
           },
         ),
       );

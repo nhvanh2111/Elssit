@@ -43,7 +43,15 @@ class _LoginWithGoogleNavState extends State<LoginWithGoogleNav> {
           } else if (snapshot.hasError) {
             return const SplashScreen();
           } else {
-            return const LoginScreen();
+            if(_elsBox.get('checkLogin') != null){
+              if(_elsBox.get('checkLogin')){
+                return const SplashScreen();
+              }else{
+                return const LoginScreen();
+              }
+            }else{
+              return const LoginScreen();
+            }
           }
         },
       ),

@@ -217,7 +217,8 @@ class _AccountScreenState extends State<AccountScreen> {
                 ),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, '/indentificationInformationScreen');
+                    Navigator.pushNamed(
+                        context, '/indentificationInformationScreen');
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -395,7 +396,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 ),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, '/signUpScreen');
+                    Navigator.pushNamed(context, '/certificationDetailScreen');
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -456,7 +457,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 ),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, '/signUpScreen');
+                    Navigator.pushNamed(context, '/achievementDetailScreen');
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -472,6 +473,67 @@ class _AccountScreenState extends State<AccountScreen> {
                       ),
                       Text(
                         'Giải thưởng & Thành tích',
+                        style: GoogleFonts.roboto(
+                          color: Colors.black,
+                          fontWeight: FontWeight.w500,
+                          fontSize: size.height * 0.022,
+                        ),
+                      ),
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              right: size.width * 0.04,
+                            ),
+                            child: Icon(
+                              Icons.add,
+                              size: size.height * 0.03,
+                              color: ColorConstant.primaryColor,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: size.height * 0.025,
+              ),
+              // Padding(
+              //   padding: EdgeInsets.only(
+              //     left: size.height * 0.03,
+              //     right: size.height * 0.03,
+              //   ),
+              Container(
+                width: size.width,
+                height: size.height * 0.09,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.all(Radius.circular(18.5)),
+                  border: Border.all(
+                    color: ColorConstant.whiteEE,
+                  ),
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/workExperienceDetailScreen');
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        ImageConstant.ic_prize,
+                        height: size.height * 0.1,
+                        width: size.height * 0.08,
+                      ),
+                      SizedBox(
+                        width: size.width * 0.005,
+                      ),
+                      Text(
+                        'Kinh nghiệm làm việc',
                         style: GoogleFonts.roboto(
                           color: Colors.black,
                           fontWeight: FontWeight.w500,
@@ -613,71 +675,61 @@ class _AccountScreenState extends State<AccountScreen> {
               //   ),
               // ),
 
-              Container(
-                width: size.width,
-                height: size.height * 0.09,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(18.5)),
-                  border: Border.all(
-                    color: ColorConstant.whiteEE,
-                  ),
-                ),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/signUpScreen');
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        ImageConstant.ic_skill,
-                        height: size.height * 0.1,
-                        width: size.height * 0.08,
-                      ),
-                      SizedBox(
-                        width: size.width * 0.005,
-                      ),
-                      Text(
-                        'Kĩ năng',
-                        style: GoogleFonts.roboto(
-                          color: Colors.black,
-                          fontWeight: FontWeight.w500,
-                          fontSize: size.height * 0.022,
-                        ),
-                      ),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Padding(
-                            padding: EdgeInsets.only(
-                              right: size.width * 0.04,
-                            ),
-                            child: Icon(
-                              Icons.add,
-                              size: size.height * 0.03,
-                              color: ColorConstant.primaryColor,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: size.height * 0.025,
-              ),
               // Container(
-              //   height: 1,
-              //   width: size.width * 0.9,
+              //   width: size.width,
+              //   height: size.height * 0.09,
               //   decoration: BoxDecoration(
-              //     color: ColorConstant.whiteEE,
+              //     color: Colors.white,
+              //     borderRadius: BorderRadius.all(Radius.circular(18.5)),
+              //     border: Border.all(
+              //       color: ColorConstant.whiteEE,
+              //     ),
+              //   ),
+              //   child: GestureDetector(
+              //     onTap: () {
+              //       Navigator.pushNamed(context, '/signUpScreen');
+              //     },
+              //     child: Row(
+              //       mainAxisAlignment: MainAxisAlignment.start,
+              //       crossAxisAlignment: CrossAxisAlignment.center,
+              //       children: [
+              //         Image.asset(
+              //           ImageConstant.ic_skill,
+              //           height: size.height * 0.1,
+              //           width: size.height * 0.08,
+              //         ),
+              //         SizedBox(
+              //           width: size.width * 0.005,
+              //         ),
+              //         Text(
+              //           'Kĩ năng',
+              //           style: GoogleFonts.roboto(
+              //             color: Colors.black,
+              //             fontWeight: FontWeight.w500,
+              //             fontSize: size.height * 0.022,
+              //           ),
+              //         ),
+              //         Expanded(
+              //           child: Align(
+              //             alignment: Alignment.centerRight,
+              //             child: Padding(
+              //               padding: EdgeInsets.only(
+              //                 right: size.width * 0.04,
+              //               ),
+              //               child: Icon(
+              //                 Icons.add,
+              //                 size: size.height * 0.03,
+              //                 color: ColorConstant.primaryColor,
+              //               ),
+              //             ),
+              //           ),
+              //         ),
+              //       ],
+              //     ),
               //   ),
               // ),
               // SizedBox(
-              //   height: size.height * 0.005,
+              //   height: size.height * 0.025,
               // ),
               Container(
                 width: size.width,
@@ -739,7 +791,20 @@ class _AccountScreenState extends State<AccountScreen> {
                 ),
               ),
               SizedBox(
-                height: size.height * 0.05,
+                height: size.height * 0.025,
+              ),
+              Container(
+                height: 1,
+                width: size.width * 0.9,
+                decoration: BoxDecoration(
+                  color: ColorConstant.whiteEE,
+                ),
+              ),
+              SizedBox(
+                height: size.height * 0.005,
+              ),
+              SizedBox(
+                height: size.height * 0.03,
               ),
             ],
           ),

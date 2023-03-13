@@ -6,7 +6,7 @@ import 'package:elssit/process/event/authen_event.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
-
+import 'package:elssit/core/validators/validations.dart';
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 import 'package:jwt_decode/jwt_decode.dart';
@@ -20,7 +20,7 @@ class AuthenBloc {
   final stateController = StreamController<AuthenState>();
 
   final Map<String, String> error = HashMap();
-  String? username;
+  String? email;
   String? password;
 
   AuthenBloc() {
@@ -29,15 +29,15 @@ class AuthenBloc {
         if (loginValidate()) {
           loginWithAccount(event.context);
         } else {}
-      } else if (event is InputUserNameEvent) {
-        username = event.username;
+      } else if (event is InputEmailEvent) {
+        email = event.email;
       } else if (event is InputPasswordEvent) {
         password = event.password;
       } else if (event is LogoutEvent) {
         logout(event.context);
       } else if (event is MaintainLoginEvent) {
         final elsBox = Hive.box('elsBox');
-        username = elsBox.get('email');
+        email = elsBox.get('email');
         password = elsBox.get('password');
         loginWithAccount(event.context);
       } else {
@@ -50,21 +50,32 @@ class AuthenBloc {
 
   bool loginValidate() {
     bool isValid = false;
-    bool isValidUserName = false;
+    bool isValidEmail = false;
     bool isValidPassword = false;
-    if (username == null || username!.trim().isEmpty) {
-      error.addAll({"username": "Vui lòng nhập tài khoản"});
+    if (email == null || email!.trim().isEmpty) {
+      error.addAll({"email": "Vui lòng điền email"});
     } else {
-      error.remove("username");
-      isValidUserName = true;
+      if (Validations.isValidEmail(email!)) {
+        error.remove("email");
+        isValidEmail = true;
+      } else {
+        error.addAll({"email": "Vui lòng nhập đúng định dạng email"});
+      }
     }
     if (password == null || password!.trim().isEmpty) {
-      error.addAll({"password": "Vui lòng nhập mật khẩu"});
+      error.addAll({"password": "Vui lòng điền mật khẩu"});
     } else {
-      error.remove("password");
-      isValidPassword = true;
+      if (Validations.isValidPassword(password!)) {
+        error.remove("password");
+        isValidPassword = true;
+      } else {
+        error.addAll({
+          "password":
+              "Mật khẩu phải có tối thiểu 8 ký tự Bao gồm chữ In chữ thường và số"
+        });
+      }
     }
-    if (isValidUserName && isValidPassword) {
+    if (isValidEmail && isValidPassword) {
       isValid = true;
       stateController.sink.add(OtherAuthenState());
     } else {
@@ -85,13 +96,12 @@ class AuthenBloc {
         },
         body: jsonEncode(
           <String, String>{
-            'email': username!,
+            'email': email!,
             'password': password!,
             'token': globals.deviceID,
           },
         ),
       );
-      print('Test login status: ${response.statusCode.toString()}');
       if (response.statusCode.toString() == '200') {
         globals.bearerToken =
             json.decode(response.body)["data"]["token"].toString();
@@ -99,20 +109,29 @@ class AuthenBloc {
                     ["authority"]
                 .toString() ==
             "SITTER") {
-          globals.customerID =
+          globals.sitterID =
               Jwt.parseJwt(globals.bearerToken.split(" ")[1])["id"].toString();
           globals.email =
               Jwt.parseJwt(globals.bearerToken.split(" ")[1])["sub"].toString();
-          globals.customerName =
-              Jwt.parseJwt(globals.bearerToken.split(" ")[1])["fullName"]
-                  .toString();
-          final elsBox = Hive.box('elsBox');
-          elsBox.put('checkLogin', true);
-          elsBox.put('email', username!);
-          elsBox.put('password', password);
-          globals.email = username!;
-          // ignore: use_build_context_synchronously
-          Navigator.pushNamed(context, '/homeScreen');
+          if (Jwt.parseJwt(globals.bearerToken.split(" ")[1])["status"]
+                  .toString() ==
+              "CREATED") {
+            final elsBox = Hive.box('elsBox');
+            elsBox.put('checkLogin', true);
+            elsBox.put('email', email!);
+            elsBox.put('password', password);
+            globals.email = email!;
+            // ignore: use_build_context_synchronously
+            Navigator.pushNamed(context, '/accountScreen');
+          } else {
+            final elsBox = Hive.box('elsBox');
+            elsBox.put('checkLogin', true);
+            elsBox.put('email', email!);
+            elsBox.put('password', password);
+            globals.email = email!;
+            // ignore: use_build_context_synchronously
+            Navigator.pushNamed(context, '/homeScreen');
+          }
         } else {
           // ignore: use_build_context_synchronously
           showFailDialog(

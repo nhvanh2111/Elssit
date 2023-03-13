@@ -80,40 +80,42 @@ class _LoginScreenState extends State<LoginScreen> {
                       cursorColor: ColorConstant.primaryColor,
                       controller: null,
                       onChanged: (value) {
-                        _authenBloc.eventController.sink.add(InputUserNameEvent(
-                            username: value.toString().trim()));
+                        _authenBloc.eventController.sink.add(
+                            InputEmailEvent(email: value.toString().trim()));
                       },
                       decoration: InputDecoration(
-                          hintText: "Email",
-                          prefixIcon: SizedBox(
-                            width: size.width * 0.05,
-                            child: Icon(
-                              Icons.account_circle_sharp,
-                              size: size.width * 0.05,
-                            ),
+                        hintText: "Email",
+                        prefixIcon: SizedBox(
+                          width: size.width * 0.05,
+                          child: Icon(
+                            Icons.account_circle_sharp,
+                            size: size.width * 0.05,
                           ),
-                          border: const OutlineInputBorder(
-                            borderSide:
-                                //BorderSide(color: Color(0xffCED0D2), width: 1),
-                                BorderSide.none,
+                        ),
+                        border: const OutlineInputBorder(
+                          borderSide:
+                              //BorderSide(color: Color(0xffCED0D2), width: 1),
+                              BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15)),
+                          borderSide: BorderSide(
+                            width: 1,
+                            color: ColorConstant.primaryColor,
                           ),
-                          focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(15)),
-                              borderSide: BorderSide(
-                                width: 1,
-                                color: ColorConstant.primaryColor,
-                              ))),
+                        ),
+                      ),
                     ),
                   ),
                 ),
                 (snapshot.hasError &&
                         (snapshot.error as Map<String, String>)
-                            .containsKey("username"))
+                            .containsKey("email"))
                     ? Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          (snapshot.error as Map<String, String>)["username"]!,
+                          (snapshot.error as Map<String, String>)["email"]!,
                           style: TextStyle(
                             color: ColorConstant.redFail,
                             fontSize: size.height * 0.017,

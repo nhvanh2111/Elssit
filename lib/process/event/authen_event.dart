@@ -7,9 +7,9 @@ class LoginEvent extends AuthenEvent {
   final BuildContext context;
 }
 
-class InputUserNameEvent extends AuthenEvent {
-  InputUserNameEvent({required this.username});
-  final String username;
+class InputEmailEvent extends AuthenEvent {
+  InputEmailEvent({required this.email});
+  final String email;
 }
 
 class InputPasswordEvent extends AuthenEvent {
