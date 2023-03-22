@@ -42,7 +42,7 @@ class SitDetailDataModel {
         gender: (json["gender"] != null) ? json["gender"] : "",
         status: (json["status"] != null) ? json["status"] : "",
         idNumber: (json["idNumber"] != null) ? json["idNumber"] : "",
-        description: (json["desc"] != null) ? json["desc"] : "",
+        description: (json["description"] != null) ? json["description"] : "",
         avatarImg: (json["avatarImg"] != null) ? json["avatarImg"] : "",
         backCardImg: (json["backCardImg"] != null) ? json["backCardImg"] : "",
         frontCardImg:
@@ -60,7 +60,7 @@ class SitDetailDataModel {
         "gender": gender,
         "status": status,
         "idNumber": idNumber,
-        "desc": description,
+        "description": description,
         "avatarImg": avatarImg,
         "backCardImg": backCardImg,
         "frontCardImg": frontCardImg,

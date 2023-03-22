@@ -29,22 +29,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             onTap: () {
               Navigator.pop(context);
             },
-            // child: SizedBox(
-            //   height: size.height * 0.1,
-
             child: Icon(
               Icons.arrow_back_rounded,
               size: size.height * 0.03,
               color: Colors.black,
             ),
-            // ),
           ),
         ),
         body: Container(
           height: size.height,
           width: size.width,
           padding: EdgeInsets.only(
-            //top: size.height * 0.02,
             left: size.width * 0.07,
             right: size.width * 0.07,
           ),
@@ -85,7 +80,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     bottom: size.height * 0.03,
                   ),
                   decoration: BoxDecoration(
-                    //color: ColorConstant.whiteE3,
                     color: Colors.white,
                     border: Border.all(
                       color: ColorConstant.primaryColor,
@@ -142,7 +136,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 Padding(
                   padding: EdgeInsets.only(
                     top: size.height * 0.04,
-                    //bottom: size.height * 0.03,
                   ),
                   child: SizedBox(
                     width: double.infinity,

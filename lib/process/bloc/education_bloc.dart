@@ -2,7 +2,11 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:elssit/core/models/education_models/education_all_model.dart';
+import 'package:elssit/core/models/education_models/education_detail_model.dart';
 import 'package:elssit/core/utils/my_utils.dart';
+import 'package:elssit/presentation/widget/dialog/dialog.dart';
+import 'package:elssit/presentation/widget/dialog/forward_dialog.dart';
 import 'package:elssit/process/event/education_event.dart';
 import 'package:elssit/process/state/education_state.dart';
 import 'package:flutter/Material.dart';
@@ -18,19 +22,27 @@ class EducationBloc {
 
   final Map<String, String> errors = HashMap();
 
+  String? educationLevel;
+  String? major;
+  String? schoolName;
   String? dateFrom;
   String? dateTo;
-  String? educationLevel;
-  String? course;
-  String? school;
+  bool? graduated;
   String? gpa;
   String? description;
   String? educationImg;
-  String? major;
-  bool? graduated;
 
   EducationBloc() {
     eventController.stream.listen((event) {
+      if (event is ChooseEducationLevelEducationEvent) {
+        educationLevel = event.educationLevel;
+      }
+      if (event is ChooseMajorLevelEducationEvent) {
+        major = event.major;
+      }
+      if (event is FillSchoolNameEducationEvent) {
+        schoolName = event.schoolName;
+      }
       if (event is ChooseStartDateEducationEvent) {
         dateFrom = event.startDate;
         stateController.sink.add(DateStartEducationState(
@@ -43,35 +55,37 @@ class EducationBloc {
             dateEndController: TextEditingController(
                 text: MyUtils().educationDateFormat(event.endDate))));
       }
-      if (event is ChooseEducationLevelEducationEvent) {
-        educationLevel = event.educationLevel;
-      }
-      if (event is ChooseMajorLevelEducationEvent) {
-        major = event.major;
-      }
-      if (event is FillCourseEducationEvent) {
-        course = event.course;
-      }
-      if (event is FillSchoolEducationEvent) {
-        school = event.school;
-      }
       if (event is FillGPAEducationEvent) {
         gpa = event.gpa;
+      }
+      if (event is GraduatedEducationEvent) {
+        graduated = event.isGraduated;
       }
       if (event is FillDescriptionEducationEvent) {
         description = event.description;
       }
       if (event is EducationImgSitEvent) {
         educationImg = event.educationImg;
-        errors.remove("educationImg");
       }
-      if (event is GraduatedEducationEvent) {
-        graduated = event.isGraduated;
-      }
-      if (event is SaveEducationEvent) {
-        if(educationValidation()){
-          createEducation(event.context);
+
+      if (event is AddNewEducationEvent) {
+        if (educationValidation()) {
+          addNewEducation(event.context);
         }
+      }
+      if (event is UpdateEducationEvent) {
+        if (educationValidation()) {
+          updateEducation(event.context, event.educationID);
+        }
+      }
+      if (event is DeleteEducationEvent) {
+        deleteEducation(event.context, event.educationID);
+      }
+      if (event is GetAllEducationEvent) {
+        getAllEducation();
+      }
+      if (event is GetEducationDetailDataEvent) {
+        getEducationByID(event.educationID);
       }
     });
   }
@@ -79,7 +93,6 @@ class EducationBloc {
   bool educationValidation() {
     bool isValid = false;
     bool isValidEducationLevel = false;
-    bool isValidCourse = false;
     bool isValidSchool = false;
     bool isValidTime = false;
     bool isValidMajor = false;
@@ -98,14 +111,8 @@ class EducationBloc {
       errors.addAll({"major": "Vui lòng chọn chuyên ngành"});
       stateController.sink.addError(errors);
     }
-    if (course != null && course!.isNotEmpty) {
-      errors.remove("course");
-      isValidCourse = true;
-    } else {
-      errors.addAll({"course": "Vui lòng nhập khóa học"});
-      stateController.sink.addError(errors);
-    }
-    if (school != null && school!.isNotEmpty) {
+
+    if (schoolName != null && schoolName!.isNotEmpty) {
       errors.remove("school");
       isValidSchool = true;
     } else {
@@ -120,7 +127,8 @@ class EducationBloc {
         errors.remove("time");
         isValidTime = true;
       } else {
-        errors.addAll({"time": "Thời gian không hợp lệ"});
+        errors.addAll(
+            {"time": "Thời gian không hợp lệ. Tối thiểu phải là 3 năm"});
         stateController.sink.addError(errors);
       }
     } else {
@@ -135,7 +143,6 @@ class EducationBloc {
           .addAll({"educationImg": "Vui lòng tải lên chứng chỉ đã tốt nghiệp"});
     }
     if (isValidEducationLevel &&
-        isValidCourse &&
         isValidSchool &&
         isValidTime &&
         isValidEducationImg &&
@@ -146,11 +153,10 @@ class EducationBloc {
     return isValid;
   }
 
-  Future<void> createEducation(BuildContext context) async {
+  Future<void> addNewEducation(BuildContext context) async {
     try {
       var url = Uri.parse(
           "https://octopus-app-dtd8l.ondigitalocean.app/api/v1/education/mobile/create");
-
       final response = await http.post(
         url,
         headers: <String, String>{
@@ -160,32 +166,136 @@ class EducationBloc {
         },
         body: jsonEncode(
           <String, dynamic>{
-            "sitterId": globals.sitterID,
             "educationLevel": educationLevel,
             "major": major,
-            "schoolName": school,
+            "schoolName": schoolName,
             "fromDate": MyUtils().convertInputDate(dateFrom!),
             "endDate": MyUtils().convertInputDate(dateTo!),
             "isGraduate": (graduated != null) ? graduated : false,
-            "imgCertificated": educationImg,
-            "description": description,
             "gpa": (gpa != null && gpa!.isNotEmpty) ? gpa! : 0,
+            "description": description,
+            "educationImg": educationImg,
+            "sitterId": globals.sitterID,
           },
         ),
       );
-
-      print(
-          'Test status code updateEducation: ${response.statusCode}');
+      print('Test status code updateEducation: ${response.statusCode}');
       if (response.statusCode.toString() == '200') {
         // ignore: use_build_context_synchronously
-        Navigator.pushNamed(context, '/accountScreen');
+        //Navigator.pushNamed(context, '/educationScreen');
+        showSuccessDialog(context);
         // MaterialPageRoute(
         //   builder: (context) => const SuccessScreen(
         //       content: "Đăng ký tài khoản thành công",
         //       buttonName: "Trở về trang đăng nhập",
-        //       navigatorPath: "/loginWithGoogleNav"),
+        //       navigatorPath: "/d"),
         // )
-        //);
+        // );
+      } else {
+        // ignore: avoid_print
+        print(json.decode(response.body)["message"].toString());
+      }
+    } finally {}
+  }
+
+  Future<void> updateEducation(BuildContext context, String educationID) async {
+    try {
+      var url = Uri.parse(
+          "https://octopus-app-dtd8l.ondigitalocean.app/api/v1/education/mobile/update");
+      final response = await http.put(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Accept': 'application/json; charset=UTF-8',
+          'Authorization': globals.bearerToken,
+        },
+        body: jsonEncode(
+          <String, dynamic>{
+            "id": educationID,
+            "educationLevel": educationLevel,
+            "major": major,
+            "schoolName": schoolName,
+            "fromDate": MyUtils().convertInputDate(dateFrom!),
+            "endDate": MyUtils().convertInputDate(dateTo!),
+            "isGraduate": (graduated != null) ? graduated : false,
+            "gpa": (gpa != null && gpa!.isNotEmpty) ? gpa! : 0,
+            "description": description,
+            "educationImg": educationImg,
+          },
+        ),
+      );
+      if (response.statusCode.toString() == '200') {
+        // ignore: use_build_context_synchronously
+        Navigator.pushNamed(context, '/educationScreen');
+      } else {
+        // ignore: avoid_print
+        print(json.decode(response.body)["message"].toString());
+      }
+    } finally {}
+  }
+
+  Future<void> getEducationByID(String educationID) async {
+    try {
+      var url = Uri.parse(
+          "https://octopus-app-dtd8l.ondigitalocean.app/api/v1/education/mobile/$educationID");
+      final response = await http.get(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': globals.bearerToken,
+          'Accept': 'application/json; charset=UTF-8',
+        },
+      );
+      if (response.statusCode.toString() == '200') {
+        stateController.sink.add(EducationDetailState(
+            education:
+                EducationDetailModel.fromJson(json.decode(response.body))));
+      } else {
+        throw Exception('Unable to fetch cus from the REST API');
+      }
+    } finally {}
+  }
+
+  Future<void> getAllEducation() async {
+    try {
+      var url = Uri.parse(
+          "https://octopus-app-dtd8l.ondigitalocean.app/api/v1/education/mobile/educations/${globals.sitterID}");
+      final response = await http.get(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': globals.bearerToken,
+          'Accept': 'application/json; charset=UTF-8',
+        },
+      );
+      if (response.statusCode.toString() == '200') {
+        stateController.sink.add(GetAllEducationState(
+            educationList:
+                EducationAllModel.fromJson(json.decode(response.body))));
+      } else {
+        throw Exception('Unable to fetch elder from the REST API');
+      }
+    } finally {}
+  }
+
+  Future<void> deleteEducation(BuildContext context, String educationID) async {
+    try {
+      var url = Uri.parse(
+          "https://octopus-app-dtd8l.ondigitalocean.app/api/v1/certificate/mobile/remove/$educationID");
+      final response = await http.patch(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Accept': 'application/json; charset=UTF-8',
+          'Authorization': globals.bearerToken,
+        },
+        body: jsonEncode(
+          <String, dynamic>{},
+        ),
+      );
+      if (response.statusCode.toString() == '200') {
+        // ignore: use_build_context_synchronously
+        Navigator.pushNamed(context, '/educationScreen');
       } else {
         // ignore: avoid_print
         print(json.decode(response.body)["message"].toString());

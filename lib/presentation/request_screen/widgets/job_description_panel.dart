@@ -18,8 +18,8 @@ class _JobDescriptionPanelState extends State<JobDescriptionPanel> {
         return Container(
           color: Colors.white,
           padding: EdgeInsets.only(
-            left: size.width*0.05,
-            right: size.width*0.05,
+            left: size.width * 0.05,
+            right: size.width * 0.05,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -29,15 +29,14 @@ class _JobDescriptionPanelState extends State<JobDescriptionPanel> {
                 color: Colors.white,
                 child: ListView.separated(
                   padding: EdgeInsets.only(
-                    top: size.height*0.02,
-                    left: size.width*0.05,
+                    top: size.height * 0.01,
+                    left: size.width * 0.05,
                   ),
                   physics: const BouncingScrollPhysics(),
                   shrinkWrap: true,
                   scrollDirection: Axis.vertical,
                   itemBuilder: (context, index) => GestureDetector(
-                    onTap: (){
-                    },
+                    onTap: () {},
                     child: Text(
                       "Nội dung gì đó",
                       style: GoogleFonts.roboto(
@@ -47,11 +46,15 @@ class _JobDescriptionPanelState extends State<JobDescriptionPanel> {
                       ),
                     ),
                   ),
-                  separatorBuilder: (context, index) =>  SizedBox(height: size.height*0.01,),
+                  separatorBuilder: (context, index) => SizedBox(
+                    height: size.height * 0.01,
+                  ),
                   itemCount: 10,
                 ),
               ),
-              SizedBox(height: size.height*0.1,),
+              SizedBox(
+                height: size.height * 0.1,
+              ),
             ],
           ),
         );

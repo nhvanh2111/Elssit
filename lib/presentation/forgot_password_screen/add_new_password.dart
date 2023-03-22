@@ -71,10 +71,6 @@ class _ForgotPasswordAddNewPasswordScreenState
                     ),
                   ),
                 ),
-                // Padding(
-                //   padding: EdgeInsets.only(
-                //     top: size.height * 0.1,
-                //   ),
                 Stack(
                   alignment: AlignmentDirectional.centerEnd,
                   children: [
@@ -84,7 +80,8 @@ class _ForgotPasswordAddNewPasswordScreenState
                       ),
                       decoration: BoxDecoration(
                         color: ColorConstant.whiteFA,
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(15)),
                       ),
                       child: StreamBuilder(
                           stream: null,
@@ -121,8 +118,8 @@ class _ForgotPasswordAddNewPasswordScreenState
                                         borderRadius: BorderRadius.all(
                                             Radius.circular(6))),
                                     focusedBorder: OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(15)),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(15)),
                                       borderSide: BorderSide(
                                         width: 2,
                                         color: ColorConstant.primaryColor,
@@ -155,19 +152,14 @@ class _ForgotPasswordAddNewPasswordScreenState
                     ),
                   ],
                 ),
-                // ),
-                // Padding(
-                //   padding: EdgeInsets.only(
-                //     top: size.height * 0.02,
-                //   ),
                 Stack(
                   alignment: AlignmentDirectional.centerEnd,
                   children: [
                     Container(
-                      // margin: EdgeInsets.fromLTRB(0, 0, size.width * 0.03, 0),
                       decoration: BoxDecoration(
                         color: ColorConstant.whiteFA,
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(15)),
                       ),
                       child: StreamBuilder(
                           stream: null,
@@ -199,12 +191,10 @@ class _ForgotPasswordAddNewPasswordScreenState
                                     ),
                                     border: const OutlineInputBorder(
                                       borderSide: BorderSide.none,
-                                      // BorderSide(
-                                      //     color: Color(0xffCED0D2), width: 1),
                                     ),
                                     focusedBorder: OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(15)),
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(15)),
                                       borderSide: BorderSide(
                                         width: 2,
                                         color: ColorConstant.primaryColor,

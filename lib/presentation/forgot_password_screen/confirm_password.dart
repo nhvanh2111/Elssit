@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/utils/color_constant.dart';
-import '../../core/utils/image_constant.dart';
 
 class ForgotPasswordConfirmPasscodeScreen extends StatefulWidget {
   const ForgotPasswordConfirmPasscodeScreen({Key? key}) : super(key: key);
@@ -53,11 +52,6 @@ class _ForgotPasswordConfirmPasscodeScreenState
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Image.asset(
-                //   ImageConstant.onboarding_second_img,
-                //   width: size.width,
-                //   height: size.height * 0.3,
-                // ),
                 Padding(
                   padding: EdgeInsets.only(
                     top: size.height * 0.3,

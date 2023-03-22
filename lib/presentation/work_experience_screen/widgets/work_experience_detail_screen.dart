@@ -1,86 +1,70 @@
 import 'dart:io';
-
-import 'package:dotted_border/dotted_border.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:elssit/core/models/work_experience_models/work_experience_detail_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:flutter_switch/flutter_switch.dart';
 import 'package:elssit/core/utils/color_constant.dart';
-import 'package:image_picker/image_picker.dart';
 
-import 'package:elssit/process/bloc/achievement_bloc.dart';
-import 'package:elssit/process/event/achievement_event.dart';
-import 'package:elssit/process/state/achievement_state.dart';
-
-import 'package:elssit/core/models/achievement_models/achievement_detail_data_model.dart';
-import 'package:elssit/core/models/achievement_models/achievement_detail_model.dart';
+import 'package:elssit/process/bloc/work_experience_bloc.dart';
+import 'package:elssit/process/event/work_experience_event.dart';
+import 'package:elssit/process/state/work_experience_state.dart';
 
 class WorkExperienceDetailScreen extends StatefulWidget {
-  const WorkExperienceDetailScreen({Key? key}) : super(key: key);
+  const WorkExperienceDetailScreen({Key? key, required this.workExperienceID})
+      : super(key: key);
+  final String workExperienceID;
 
   @override
   State<WorkExperienceDetailScreen> createState() =>
-      _WorkExperienceDetailScreenState();
+      _WorkExperienceDetailScreenState(workExperienceID: workExperienceID);
 }
 
 class _WorkExperienceDetailScreenState
     extends State<WorkExperienceDetailScreen> {
-  TextEditingController dateInput = TextEditingController();
-  final _achievementBloc = AchievementBloc();
+  _WorkExperienceDetailScreenState({required this.workExperienceID});
+  final String workExperienceID;
 
-  late var titleController = TextEditingController();
-  late var organizationController = TextEditingController();
+  final _workExperienceBloc = WorkExperienceBloc();
+
+  late var jobTitleController = TextEditingController();
+  late var expTimeController = TextEditingController();
   late var descriptionController = TextEditingController();
 
-  // Achievement Img
-  String achievementImg = "";
-  late File imageFileAchievementImg;
-  XFile? pickedFileAchievementImg;
-  UploadTask? uploadTaskAchievementImg;
-  bool isAchievementImgCheck = false;
-
-  _getEducationImageFromGallery() async {
-    pickedFileAchievementImg = (await ImagePicker().pickImage(
-      source: ImageSource.camera,
-    ));
-    if (pickedFileAchievementImg != null) {
-      setState(() {
-        imageFileAchievementImg = File(pickedFileAchievementImg!.path);
-      });
-    }
-    isAchievementImgCheck = true;
-    final path = 'els_sitter_images/${pickedFileAchievementImg!.name}';
-    final file = File(pickedFileAchievementImg!.path);
-    final ref = FirebaseStorage.instance.ref().child(path);
-    uploadTaskAchievementImg = ref.putFile(file);
-
-    final snapshot = await uploadTaskAchievementImg!.whenComplete(() {});
-    final urlDownload = await snapshot.ref.getDownloadURL();
-    achievementImg = urlDownload;
-    _achievementBloc.eventController.sink
-        .add(AchievementImgEvent(achievementImg: achievementImg));
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _workExperienceBloc.eventController.sink
+        .add(GetWorkExperienceDetailEvent(workExperienceID: workExperienceID));
   }
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     final ThemeData theme = ThemeData();
-    return StreamBuilder<AchievementState>(
-        stream: _achievementBloc.stateController.stream,
+    return StreamBuilder<WorkExperienceState>(
+        stream: _workExperienceBloc.stateController.stream,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            if (snapshot.hasData is AchievementDetailState) {
-              AchievementDetailModel achievementDetail =
-                  (snapshot.data as AchievementDetailState).achievement;
-              _achievementBloc.eventController.sink.add(
-                  FillTitleAchievementEvent(
-                      title: achievementDetail.data.title));
-              titleController =
-                  TextEditingController(text: achievementDetail.data.title);
-              // _achievementBloc.eventController.sink.add(FillOrganizationAchievementEvent(organization: achievementDetail.data.));
-              // organizationController = TextEditingController(text: achievementDetail.data.);
+            if (snapshot.data is GetWorkExperienceDetailState) {
+              WorkExperienceDetailModel workExperienceDetail =
+                  (snapshot.data as GetWorkExperienceDetailState)
+                      .workExperience;
+              _workExperienceBloc.eventController.sink.add(
+                  FillJobTitleWorkExperienceEvent(
+                      jobTitle: workExperienceDetail.data.jobTitle));
+              jobTitleController = TextEditingController(
+                  text: workExperienceDetail.data.jobTitle);
+              _workExperienceBloc.eventController.sink.add(
+                  FillExpTimeWorkExperienceEvent(
+                      expTime: workExperienceDetail.data.expTime));
+              expTimeController = TextEditingController(
+                  text: workExperienceDetail.data.expTime);
+              _workExperienceBloc.eventController.sink.add(
+                  FillDescriptionWorkExperienceEvent(
+                      description: workExperienceDetail.data.description));
+              descriptionController = TextEditingController(
+                  text: workExperienceDetail.data.description);
+              _workExperienceBloc.eventController.sink
+                  .add(WorkExperienceOtherEvent());
             }
           }
           return Material(
@@ -89,6 +73,21 @@ class _WorkExperienceDetailScreenState
                 backgroundColor: Colors.white,
                 bottomOpacity: 0.0,
                 elevation: 0.0,
+                actions: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.delete_outline_rounded,
+                      size: size.height * 0.03,
+                      color: Colors.red,
+                    ),
+                    onPressed: () {
+                      _workExperienceBloc.eventController.sink.add(
+                          DeleteWorkExperienceEvent(
+                              workExperienceID: workExperienceID,
+                              context: context));
+                    },
+                  ),
+                ],
                 leading: GestureDetector(
                   onTap: () {
                     Navigator.pop(context);
@@ -158,11 +157,11 @@ class _WorkExperienceDetailScreenState
                               fontWeight: FontWeight.bold,
                             ),
                             cursorColor: ColorConstant.primaryColor,
-                            controller: null,
+                            controller: jobTitleController,
                             onChanged: (value) {
-                              _achievementBloc.eventController.sink.add(
-                                  FillTitleAchievementEvent(
-                                      title: value.toString().trim()));
+                              _workExperienceBloc.eventController.sink.add(
+                                  FillJobTitleWorkExperienceEvent(
+                                      jobTitle: value.toString().trim()));
                             },
                             decoration: InputDecoration(
                               contentPadding: EdgeInsets.only(
@@ -234,11 +233,11 @@ class _WorkExperienceDetailScreenState
                               fontWeight: FontWeight.bold,
                             ),
                             cursorColor: ColorConstant.primaryColor,
-                            controller: null,
+                            controller: expTimeController,
                             onChanged: (value) {
-                              _achievementBloc.eventController.sink.add(
-                                  FillOrganizationAchievementEvent(
-                                      organization: value.toString().trim()));
+                              _workExperienceBloc.eventController.sink.add(
+                                  FillExpTimeWorkExperienceEvent(
+                                      expTime: value.toString().trim()));
                             },
                             decoration: InputDecoration(
                               contentPadding: EdgeInsets.only(
@@ -311,10 +310,10 @@ class _WorkExperienceDetailScreenState
                               fontWeight: FontWeight.bold,
                             ),
                             cursorColor: ColorConstant.primaryColor,
-                            controller: null,
+                            controller: descriptionController,
                             onChanged: (value) {
-                              _achievementBloc.eventController.sink.add(
-                                  FillDescriptionAchievementEvent(
+                              _workExperienceBloc.eventController.sink.add(
+                                  FillDescriptionWorkExperienceEvent(
                                       description: value.toString().trim()));
                             },
                             decoration: InputDecoration(
@@ -359,8 +358,10 @@ class _WorkExperienceDetailScreenState
                         height: size.height * 0.07,
                         child: ElevatedButton(
                           onPressed: () {
-                            _achievementBloc.eventController.sink
-                                .add(AddNewAchievementEvent(context: context));
+                            _workExperienceBloc.eventController.sink.add(
+                                UpdateWorkExperienceEvent(
+                                    workExperienceID: workExperienceID,
+                                    context: context));
                           },
                           style: ElevatedButton.styleFrom(
                             shape: RoundedRectangleBorder(

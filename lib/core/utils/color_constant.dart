@@ -20,6 +20,8 @@ class ColorConstant {
 
   static Color gray43 = fromHex('434343');
 
+  static Color gray4A = fromHex('4A4A4A');
+
   static Color gray9E = fromHex('9E9E9E');
 
   static Color gray75 = fromHex('757171');
@@ -33,6 +35,18 @@ class ColorConstant {
   static Color redErrorText = fromHex('#c53530');
 
   static Color yellowButton = fromHex("FBCC16");
+
+  static Color blue1 = fromHex('1A96F0');
+
+  static Color red1 = fromHex('F54336');
+
+  static Color purple1 = fromHex('7210FF');
+
+  static Color blueSky1 = fromHex('00BCD3');
+
+  static Color yellow1 = fromHex('F4B828');
+
+  static Color yellowFF = fromHex('FFC02D');
 
   static Color fromHex(String hexString) {
     final buffer = StringBuffer();

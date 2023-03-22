@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:collection';
 
+import 'package:elssit/presentation/widget/dialog/forward_dialog.dart';
 import 'package:elssit/process/event/authen_event.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -122,7 +123,9 @@ class AuthenBloc {
             elsBox.put('password', password);
             globals.email = email!;
             // ignore: use_build_context_synchronously
-            Navigator.pushNamed(context, '/accountScreen');
+            //Navigator.pushNamed(context, '/accountScreen');
+            // ignore: use_build_context_synchronously
+            showForwardDialog(context);
           } else {
             final elsBox = Hive.box('elsBox');
             elsBox.put('checkLogin', true);

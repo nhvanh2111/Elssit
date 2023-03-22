@@ -1,5 +1,5 @@
-
 import 'package:elssit/presentation/account_screen/account_screen.dart';
+import 'package:elssit/presentation/home_screen/home_screen.dart';
 import 'package:elssit/presentation/request_screen/request_screen.dart';
 
 import 'package:elssit/presentation/schedule_screen/schedule_screen.dart';
@@ -35,14 +35,13 @@ class _BottomBarNavigationState extends State<BottomBarNavigation> {
   Widget pageCaller(index) {
     switch (selectedIndex) {
       case 0:
-        return const SplashScreen();
+        return const HomeScreen();
       case 1:
         return const RequestScreen();
       case 2:
         return const ScheduleScreen();
       case 3:
         return const AccountScreen();
-
       default:
         return const SplashScreen();
     }
@@ -69,7 +68,6 @@ class _BottomBarNavigationState extends State<BottomBarNavigation> {
                   label: 'Trang chủ',
                 ),
                 BottomNavigationBarItem(
-
                   icon: ImageIcon(
                     AssetImage(ImageConstant.icRequest),
                   ),

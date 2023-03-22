@@ -76,16 +76,14 @@ Widget requestItem(BuildContext context) {
                   ),
                 ),
               ),
-
             ],
           ),
           Expanded(
-
             child: Container(
               alignment: Alignment.centerRight,
-              height: size.height*0.12,
+              height: size.height * 0.12,
               child: Icon(
-                Icons.arrow_forward_ios_rounded,
+                Icons.arrow_forward,
                 size: size.height * 0.03,
                 color: Colors.black,
               ),

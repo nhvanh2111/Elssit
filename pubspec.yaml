@@ -58,6 +58,8 @@ dependencies:
   dotted_border: ^2.0.0+3
   flutter_datetime_picker: ^1.5.1
   age_calculator: ^1.0.0
+  loading_animation_widget:
+  quickalert:
 dev_dependencies:
   flutter_test:
     sdk: flutter

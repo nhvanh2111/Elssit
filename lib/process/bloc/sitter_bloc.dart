@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:convert';
 
+import 'package:elssit/core/utils/my_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:jwt_decode/jwt_decode.dart';
@@ -48,7 +49,6 @@ class SitBloc {
       }
       if (event is FillAddressSitEvent) {
         address = event.address;
-        print('Test address: ${event.address}');
         errors.remove("address");
       }
       if (event is FillDobSitEvent) {
@@ -96,7 +96,7 @@ class SitBloc {
           sitSignUp(event.context);
         }
       }
-      if (event is SaveContactEvent) {
+      if (event is UpdateContactDetailSitEvent) {
         if (contactValidation()) {
           updateContactInfoSit(event.context);
         }
@@ -104,13 +104,15 @@ class SitBloc {
       if (event is GetContactSitEvent) {
         getContactSitByID();
       }
-      if (event is SaveInformationEvent) {
-        if(informationValidation()){
+      if (event is UpdateInformationDetailSitEvent) {
+        if (informationValidation()) {
           updateInformationInfoSit(event.context);
         }
       }
-
-      if(event is SitOtherEvent){
+      if (event is GetInformationEvent) {
+        getInformationSitByID();
+      }
+      if (event is SitOtherEvent) {
         stateController.add(SitOtherState());
       }
     });
@@ -335,18 +337,9 @@ class SitBloc {
           },
         ),
       );
-
-      print('Test status code updateCus: ${response.statusCode}');
       if (response.statusCode.toString() == '200') {
         // ignore: use_build_context_synchronously
         Navigator.pushNamed(context, '/accountScreen');
-        // MaterialPageRoute(
-        //   builder: (context) => const SuccessScreen(
-        //       content: "Đăng ký tài khoản thành công",
-        //       buttonName: "Trở về trang đăng nhập",
-        //       navigatorPath: "/loginWithGoogleNav"),
-        // )
-        //);
       } else {
         // ignore: use_build_context_synchronously
         showFailDialog(
@@ -377,11 +370,9 @@ class SitBloc {
   }
 
   Future<void> updateInformationInfoSit(BuildContext context) async {
-
     try {
       var url = Uri.parse(
           "https://octopus-app-dtd8l.ondigitalocean.app/api/v1/sitter/mobile/information/update");
-
       final response = await http.put(
         url,
         headers: <String, String>{
@@ -402,8 +393,6 @@ class SitBloc {
           },
         ),
       );
-
-      print('Test status code updateInformationInfoSit: ${response.statusCode}');
       if (response.statusCode.toString() == '200') {
         // ignore: use_build_context_synchronously
         Navigator.pushNamed(context, '/accountScreen');

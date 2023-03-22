@@ -20,15 +20,30 @@ class FillDescriptionWorkExperienceEvent extends WorkExperienceEvent {
 
 class AddNewWorkExperienceEvent extends WorkExperienceEvent {
   AddNewWorkExperienceEvent({required this.context});
-
   final BuildContext context;
+}
+
+class GetWorkExperienceDetailEvent extends WorkExperienceEvent {
+  GetWorkExperienceDetailEvent({required this.workExperienceID});
+  final String workExperienceID;
+}
+
+class GetAllWorkExperienceEvent extends WorkExperienceEvent {
+  GetAllWorkExperienceEvent();
 }
 
 class UpdateWorkExperienceEvent extends WorkExperienceEvent {
   UpdateWorkExperienceEvent(
-      {
-      //required this.elderID,
-      required this.context});
-  //final String elderID;
+      {required this.workExperienceID, required this.context});
+  final String workExperienceID;
   final BuildContext context;
 }
+
+class DeleteWorkExperienceEvent extends WorkExperienceEvent {
+  DeleteWorkExperienceEvent(
+      {required this.workExperienceID, required this.context});
+  final String workExperienceID;
+  final BuildContext context;
+}
+
+class WorkExperienceOtherEvent extends WorkExperienceEvent {}

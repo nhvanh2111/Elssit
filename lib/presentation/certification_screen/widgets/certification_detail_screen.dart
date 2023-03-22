@@ -1,111 +1,116 @@
 import 'dart:io';
 
 import 'package:dotted_border/dotted_border.dart';
+import 'package:elssit/core/models/certification_models/certification_detail_model.dart';
+import 'package:elssit/core/utils/my_utils.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
-import 'package:flutter_switch/flutter_switch.dart';
 import 'package:elssit/core/utils/color_constant.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'package:elssit/process/bloc/achievement_bloc.dart';
-import 'package:elssit/process/event/achievement_event.dart';
-import 'package:elssit/process/state/achievement_state.dart';
+import 'package:elssit/process/bloc/certification_bloc.dart';
+import 'package:elssit/process/event/certification_event.dart';
+import 'package:elssit/process/state/certification_state.dart';
 
-import 'package:elssit/core/models/achievement_models/achievement_detail_data_model.dart';
-import 'package:elssit/core/models/achievement_models/achievement_detail_model.dart';
-
-class AchievementDetailScreen extends StatefulWidget {
-  const AchievementDetailScreen({Key? key, required this.achievementID})
+class CertificationDetailScreen extends StatefulWidget {
+  const CertificationDetailScreen({Key? key, required this.certificationID})
       : super(key: key);
-  final String achievementID;
+  final String certificationID;
+
   @override
-  State<AchievementDetailScreen> createState() =>
-      _AchievementDetailScreenState(achievementID: achievementID);
+  State<CertificationDetailScreen> createState() =>
+      _CertificationDetailScreenState(certificationID: certificationID);
 }
 
-class _AchievementDetailScreenState extends State<AchievementDetailScreen> {
-  _AchievementDetailScreenState({required this.achievementID});
-  final String achievementID;
-
+class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
+  _CertificationDetailScreenState({required this.certificationID});
+  final String certificationID;
   TextEditingController dateInput = TextEditingController();
-  final _achievementBloc = AchievementBloc();
+  final _certificationBloc = CertificationBloc();
 
   late var titleController = TextEditingController();
   late var organizationController = TextEditingController();
-  late var descriptionController = TextEditingController();
+  late var credentialIDController = TextEditingController();
+  late var credentialURLController = TextEditingController();
 
-  // Achievement Img
-  String achievementImg = "";
-  late File imageFileAchievementImg;
-  XFile? pickedFileAchievementImg;
-  UploadTask? uploadTaskAchievementImg;
-  bool isAchievementImgCheck = false;
+  // Certification Img
+  String certificationImg = "";
+  late File imageFileCertificationImg;
+  XFile? pickedFileCertificationImg;
+  UploadTask? uploadTaskCertificationImg;
+  bool isCertificationImgCheck = false;
 
   _getEducationImageFromGallery() async {
-    pickedFileAchievementImg = (await ImagePicker().pickImage(
+    pickedFileCertificationImg = (await ImagePicker().pickImage(
       source: ImageSource.camera,
     ));
-    if (pickedFileAchievementImg != null) {
+    if (pickedFileCertificationImg != null) {
       setState(() {
-        imageFileAchievementImg = File(pickedFileAchievementImg!.path);
+        imageFileCertificationImg = File(pickedFileCertificationImg!.path);
       });
     }
-    isAchievementImgCheck = true;
-    final path = 'els_sitter_images/${pickedFileAchievementImg!.name}';
-    final file = File(pickedFileAchievementImg!.path);
+    isCertificationImgCheck = true;
+    final path = 'els_sitter_images/${pickedFileCertificationImg!.name}';
+    final file = File(pickedFileCertificationImg!.path);
     final ref = FirebaseStorage.instance.ref().child(path);
-    uploadTaskAchievementImg = ref.putFile(file);
+    uploadTaskCertificationImg = ref.putFile(file);
 
-    final snapshot = await uploadTaskAchievementImg!.whenComplete(() {});
+    final snapshot = await uploadTaskCertificationImg!.whenComplete(() {});
     final urlDownload = await snapshot.ref.getDownloadURL();
-    achievementImg = urlDownload;
-    _achievementBloc.eventController.sink
-        .add(AchievementImgEvent(achievementImg: achievementImg));
+    certificationImg = urlDownload;
+    _certificationBloc.eventController.sink
+        .add(CertificationImgEvent(certificationImg: certificationImg));
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _achievementBloc.eventController.sink
-        .add(GetAchievementDetailDataEvent(achievementID: achievementID));
+    _certificationBloc.eventController.sink
+        .add(GetCertificationDetailDataEvent(certificationID: certificationID));
   }
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     final ThemeData theme = ThemeData();
-    return StreamBuilder<AchievementState>(
-        stream: _achievementBloc.stateController.stream,
+    return StreamBuilder<CertificationState>(
+        stream: _certificationBloc.stateController.stream,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            if (snapshot.hasData is AchievementDetailState) {
-              AchievementDetailModel achievementDetail =
-                  (snapshot.data as AchievementDetailState).achievement;
-              _achievementBloc.eventController.sink.add(
-                  FillTitleAchievementEvent(
-                      title: achievementDetail.data.title));
+            if (snapshot.data is CertificationDetailState) {
+              CertificationDetailModel certificationDetail =
+                  (snapshot.data as CertificationDetailState).certification;
+              _certificationBloc.eventController.sink.add(
+                  FillTitleCertificationEvent(
+                      title: certificationDetail.data.title));
               titleController =
-                  TextEditingController(text: achievementDetail.data.title);
-              _achievementBloc.eventController.sink.add(
-                  FillOrganizationAchievementEvent(
-                      organization: achievementDetail.data.organization));
+                  TextEditingController(text: certificationDetail.data.title);
+              _certificationBloc.eventController.sink.add(
+                  FillOrganizationCertificationEvent(
+                      organization: certificationDetail.data.organization));
               organizationController = TextEditingController(
-                  text: achievementDetail.data.organization);
-              _achievementBloc.eventController.sink.add(
-                  ChooseReceivedDateAchievementEvent(
-                      receivedDate: achievementDetail.data.dateReceived));
-              _achievementBloc.eventController.sink.add(
-                  FillDescriptionAchievementEvent(
-                      description: achievementDetail.data.description));
-              descriptionController = TextEditingController(
-                  text: achievementDetail.data.description);
+                  text: certificationDetail.data.organization);
+              _certificationBloc.eventController.sink.add(
+                  ChooseReceivedDateCertificationEvent(
+                      receivedDate: MyUtils().convertInputDate(
+                          certificationDetail.data.dateReceived)));
+              _certificationBloc.eventController.sink.add(
+                  FillCredentialIDCertificationEvent(
+                      credentialID: certificationDetail.data.credentialID));
+              credentialIDController = TextEditingController(
+                  text: certificationDetail.data.credentialID);
 
-              _achievementBloc.eventController.sink
-                  .add(AchievementOtherEvent());
+              _certificationBloc.eventController.sink.add(
+                  FillCredentialURLCertificationEvent(
+                      credentialURL: certificationDetail.data.credentialURL));
+              credentialURLController = TextEditingController(
+                  text: certificationDetail.data.credentialURL);
+
+              _certificationBloc.eventController.sink
+                  .add(CertificationOtherEvent());
             }
           }
           return Material(
@@ -117,13 +122,15 @@ class _AchievementDetailScreenState extends State<AchievementDetailScreen> {
                 actions: [
                   IconButton(
                     icon: Icon(
-                      Icons.delete_outline_outlined,
+                      Icons.delete_outline_rounded,
                       size: size.height * 0.03,
-                      color: Colors.black,
+                      color: Colors.red,
                     ),
                     onPressed: () {
-                      // _elderBloc.eventController.sink.add(
-                      //     DeleteElderEvent(elderID: elderID, context: context));
+                      _certificationBloc.eventController.sink.add(
+                          DeleteCertificationEvent(
+                              certificationID: certificationID,
+                              context: context));
                     },
                   ),
                 ],
@@ -139,7 +146,7 @@ class _AchievementDetailScreenState extends State<AchievementDetailScreen> {
                 ),
                 title: Padding(
                   padding: EdgeInsets.only(left: size.width * 0.005),
-                  child: const Text("Giải Thưởng & Thành Tích"),
+                  child: const Text("Chứng Nhận & Giấy Phép"),
                 ),
                 titleTextStyle: GoogleFonts.roboto(
                   fontSize: size.height * 0.028,
@@ -198,15 +205,15 @@ class _AchievementDetailScreenState extends State<AchievementDetailScreen> {
                             cursorColor: ColorConstant.primaryColor,
                             controller: titleController,
                             onChanged: (value) {
-                              _achievementBloc.eventController.sink.add(
-                                  FillTitleAchievementEvent(
+                              _certificationBloc.eventController.sink.add(
+                                  FillTitleCertificationEvent(
                                       title: value.toString().trim()));
                             },
                             decoration: InputDecoration(
                               contentPadding: EdgeInsets.only(
                                 left: size.width * 0.04,
                               ),
-                              hintText: "Tiêu đề của giải thưởng",
+                              hintText: "Tiêu đề của chứng nhận",
                               border: const OutlineInputBorder(
                                 borderSide: BorderSide.none,
                               ),
@@ -243,7 +250,7 @@ class _AchievementDetailScreenState extends State<AchievementDetailScreen> {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          'Tổ chức',
+                          'Đơn vị phát hành',
                           style: GoogleFonts.roboto(
                             color: ColorConstant.gray43,
                             fontWeight: FontWeight.w400,
@@ -274,15 +281,15 @@ class _AchievementDetailScreenState extends State<AchievementDetailScreen> {
                             cursorColor: ColorConstant.primaryColor,
                             controller: organizationController,
                             onChanged: (value) {
-                              _achievementBloc.eventController.sink.add(
-                                  FillOrganizationAchievementEvent(
+                              _certificationBloc.eventController.sink.add(
+                                  FillOrganizationCertificationEvent(
                                       organization: value.toString().trim()));
                             },
                             decoration: InputDecoration(
                               contentPadding: EdgeInsets.only(
                                 left: size.width * 0.04,
                               ),
-                              hintText: "Tổ chức trao giải thưởng",
+                              hintText: "Đơn vị cấp chứng nhận",
                               border: const OutlineInputBorder(
                                 borderSide: BorderSide.none,
                               ),
@@ -343,8 +350,8 @@ class _AchievementDetailScreenState extends State<AchievementDetailScreen> {
                                   onChanged: (date) {}, onConfirm: (date) {
                                 String dateInput =
                                     '${(date.day >= 10) ? date.day : '0${date.day}'}-${(date.month >= 10) ? date.month : '0${date.month}'}-${date.year}';
-                                _achievementBloc.eventController.sink.add(
-                                    ChooseReceivedDateAchievementEvent(
+                                _certificationBloc.eventController.sink.add(
+                                    ChooseReceivedDateCertificationEvent(
                                         receivedDate: dateInput));
                               },
                                   currentTime: DateTime.now(),
@@ -362,9 +369,9 @@ class _AchievementDetailScreenState extends State<AchievementDetailScreen> {
                                     color: Colors.black),
                                 cursorColor: ColorConstant.primaryColor,
                                 controller: (snapshot.data
-                                        is DateReceivedAchievementState)
+                                        is DateReceivedCertificationState)
                                     ? (snapshot.data
-                                            as DateReceivedAchievementState)
+                                            as DateReceivedCertificationState)
                                         .dateReceivedController
                                     : null,
                                 enabled: false,
@@ -406,13 +413,28 @@ class _AchievementDetailScreenState extends State<AchievementDetailScreen> {
                           ),
                         ),
                       ),
+                      (snapshot.hasError &&
+                              (snapshot.error as Map<String, String>)
+                                  .containsKey("time"))
+                          ? Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                (snapshot.error
+                                    as Map<String, String>)["time"]!,
+                                style: TextStyle(
+                                  color: ColorConstant.redFail,
+                                  fontSize: size.height * 0.017,
+                                ),
+                              ),
+                            )
+                          : const SizedBox(),
                       SizedBox(
                         height: size.height * 0.02,
                       ),
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          'Mô tả (không bắt buộc)',
+                          'ID xác thực (không bắt buộc)',
                           style: GoogleFonts.roboto(
                             color: ColorConstant.gray43,
                             fontWeight: FontWeight.w400,
@@ -435,23 +457,82 @@ class _AchievementDetailScreenState extends State<AchievementDetailScreen> {
                                 .copyWith(primary: ColorConstant.primaryColor),
                           ),
                           child: TextField(
-                            maxLines: 11,
                             style: TextStyle(
                               fontSize: size.width * 0.04,
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
                             ),
                             cursorColor: ColorConstant.primaryColor,
-                            controller: descriptionController,
+                            controller: credentialIDController,
                             onChanged: (value) {
-                              _achievementBloc.eventController.sink.add(
-                                  FillDescriptionAchievementEvent(
-                                      description: value.toString().trim()));
+                              _certificationBloc.eventController.sink.add(
+                                  FillCredentialIDCertificationEvent(
+                                      credentialID: value.toString().trim()));
                             },
                             decoration: InputDecoration(
                               contentPadding: EdgeInsets.only(
                                 left: size.width * 0.04,
-                                top: size.height * 0.05,
+                              ),
+                              hintText: "....",
+                              border: const OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(15)),
+                                borderSide: BorderSide(
+                                  width: 1,
+                                  color: ColorConstant.primaryColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: size.height * 0.02,
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'URL xác thực (không bắt buộc)',
+                          style: GoogleFonts.roboto(
+                            color: ColorConstant.gray43,
+                            fontWeight: FontWeight.w400,
+                            fontSize: size.height * 0.02,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: size.height * 0.025,
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: ColorConstant.whiteF3,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15)),
+                        ),
+                        child: Theme(
+                          data: theme.copyWith(
+                            colorScheme: theme.colorScheme
+                                .copyWith(primary: ColorConstant.primaryColor),
+                          ),
+                          child: TextField(
+                            style: TextStyle(
+                              fontSize: size.width * 0.04,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            cursorColor: ColorConstant.primaryColor,
+                            controller: credentialURLController,
+                            onChanged: (value) {
+                              _certificationBloc.eventController.sink.add(
+                                  FillCredentialURLCertificationEvent(
+                                      credentialURL: value.toString().trim()));
+                            },
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.only(
+                                left: size.width * 0.04,
                               ),
                               hintText: "....",
                               border: const OutlineInputBorder(
@@ -486,7 +567,7 @@ class _AchievementDetailScreenState extends State<AchievementDetailScreen> {
                       SizedBox(
                         height: size.height * 0.025,
                       ),
-                      (!isAchievementImgCheck)
+                      (!isCertificationImgCheck)
                           ? DottedBorder(
                               color: Colors.grey.withOpacity(0.3),
                               dashPattern: const [12, 8],
@@ -540,7 +621,8 @@ class _AchievementDetailScreenState extends State<AchievementDetailScreen> {
                                   borderRadius:
                                       BorderRadius.circular(size.height * 0.02),
                                   image: DecorationImage(
-                                      image: FileImage(imageFileAchievementImg),
+                                      image:
+                                          FileImage(imageFileCertificationImg),
                                       fit: BoxFit.fill),
                                 ),
                                 child: GestureDetector(
@@ -567,29 +649,14 @@ class _AchievementDetailScreenState extends State<AchievementDetailScreen> {
                       SizedBox(
                         height: size.height * 0.01,
                       ),
-                      // (snapshot.hasError &&
-                      //         (snapshot.error as Map<String, String>)
-                      //             .containsKey("educationImg"))
-                      //     ? Align(
-                      //         alignment: Alignment.centerLeft,
-                      //         child: Text(
-                      //           (snapshot.error
-                      //               as Map<String, String>)["educationImg"]!,
-                      //           style: TextStyle(
-                      //             color: ColorConstant.redFail,
-                      //             fontSize: size.height * 0.017,
-                      //           ),
-                      //         ),
-                      //       )
-                      //     : const SizedBox(),
                       (snapshot.hasError &&
                               (snapshot.error as Map<String, String>)
-                                  .containsKey("achievementImg"))
+                                  .containsKey("certificationImg"))
                           ? Align(
                               alignment: Alignment.centerLeft,
                               child: Text(
-                                (snapshot.error
-                                    as Map<String, String>)["achievementImg"]!,
+                                (snapshot.error as Map<String, String>)[
+                                    "certificationImg"]!,
                                 style: TextStyle(
                                   color: ColorConstant.redFail,
                                   fontSize: size.height * 0.017,
@@ -615,9 +682,9 @@ class _AchievementDetailScreenState extends State<AchievementDetailScreen> {
                         height: size.height * 0.07,
                         child: ElevatedButton(
                           onPressed: () {
-                            _achievementBloc.eventController.sink.add(
-                                UpdateAchievementEvent(
-                                    achievementID: achievementID,
+                            _certificationBloc.eventController.sink.add(
+                                UpdateCertificationEvent(
+                                    certificationID: certificationID,
                                     context: context));
                           },
                           style: ElevatedButton.styleFrom(

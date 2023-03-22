@@ -1,13 +1,10 @@
+import 'package:flutter/Material.dart';
+
 abstract class CertificationEvent {}
 
-class ChooseStartDateCertificationEvent extends CertificationEvent {
-  ChooseStartDateCertificationEvent({required this.startDate});
-  String startDate;
-}
-
-class ChooseEndDateCertificationEvent extends CertificationEvent {
-  ChooseEndDateCertificationEvent({required this.endDate});
-  String endDate;
+class ChooseReceivedDateCertificationEvent extends CertificationEvent {
+  ChooseReceivedDateCertificationEvent({required this.receivedDate});
+  final String receivedDate;
 }
 
 class FillTitleCertificationEvent extends CertificationEvent {
@@ -30,18 +27,37 @@ class FillCredentialURLCertificationEvent extends CertificationEvent {
   String credentialURL;
 }
 
-class FillDescriptionCertificationEvent extends CertificationEvent {
-  FillDescriptionCertificationEvent({required this.description});
-  String description;
-}
-
 class CertificationImgEvent extends CertificationEvent {
   CertificationImgEvent({required this.certificationImg});
   String certificationImg;
 }
 
-class GetAllCertCertificationEvent extends CertificationEvent{
-
+class AddNewCertificationEvent extends CertificationEvent {
+  AddNewCertificationEvent({required this.context});
+  final BuildContext context;
 }
 
-class SaveCertificationEvent extends CertificationEvent {}
+class GetCertificationDetailDataEvent extends CertificationEvent {
+  GetCertificationDetailDataEvent({required this.certificationID});
+  final String certificationID;
+}
+
+class GetAllCertificationEvent extends CertificationEvent {
+  GetAllCertificationEvent();
+}
+
+class UpdateCertificationEvent extends CertificationEvent {
+  UpdateCertificationEvent(
+      {required this.certificationID, required this.context});
+  final String certificationID;
+  final BuildContext context;
+}
+
+class DeleteCertificationEvent extends CertificationEvent {
+  DeleteCertificationEvent(
+      {required this.certificationID, required this.context});
+  final String certificationID;
+  final BuildContext context;
+}
+
+class CertificationOtherEvent extends CertificationEvent {}

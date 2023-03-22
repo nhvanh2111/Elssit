@@ -1,6 +1,8 @@
-import 'dart:io'; 
+import 'dart:io';
 
+import 'package:elssit/core/models/sitter_models/sitter_detail_data_model.dart';
 import 'package:elssit/core/utils/my_utils.dart';
+import 'package:elssit/process/state/sitter_state.dart';
 import 'package:flutter/Material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -25,10 +27,11 @@ class IndentificationInformationScreen extends StatefulWidget {
 
 class _IndentificationInformationScreenState
     extends State<IndentificationInformationScreen> {
-  late var _fullNameController = TextEditingController();
-  late var _dobController = TextEditingController();
-  late var _genderController = TextEditingController();
-  late var _idNumberController = TextEditingController();
+  late var fullNameController = TextEditingController();
+  late var dobController = TextEditingController();
+  late var genderController = TextEditingController();
+  late var idNumberController = TextEditingController();
+
   bool _isAddAvatar = false;
   final _sitBloc = SitBloc();
 
@@ -92,7 +95,8 @@ class _IndentificationInformationScreenState
     final snapshot = await uploadTaskBackCardImg!.whenComplete(() {});
     final urlDownload = await snapshot.ref.getDownloadURL();
     BackCardImg = urlDownload;
-    _sitBloc.eventController.sink.add(BackCardImgSitEvent(backCardImg: BackCardImg));
+    _sitBloc.eventController.sink
+        .add(BackCardImgSitEvent(backCardImg: BackCardImg));
   }
 
   _getIDCardFrontImageFromGallery() async {
@@ -113,7 +117,8 @@ class _IndentificationInformationScreenState
     final snapshot = await uploadTaskFrontCardImg!.whenComplete(() {});
     final urlDownload = await snapshot.ref.getDownloadURL();
     FrontCardImg = urlDownload;
-    _sitBloc.eventController.sink.add(FrontCardImgSitEvent(frontCardImg: FrontCardImg));
+    _sitBloc.eventController.sink
+        .add(FrontCardImgSitEvent(frontCardImg: FrontCardImg));
   }
 
   @override
@@ -122,15 +127,17 @@ class _IndentificationInformationScreenState
     super.initState();
     if (globals.idString != "") {
       List<String> listInfo = globals.idString.split("|");
-      _fullNameController = TextEditingController(text: listInfo[2]);
+      fullNameController = TextEditingController(text: listInfo[2]);
       _sitBloc.eventController.sink
           .add(FillFullNameSitEvent(fullName: listInfo[2]));
-      _dobController = TextEditingController(text: MyUtils().convertDOBFromIDCard(listInfo[3]));
-      _sitBloc.eventController.sink.add(FillDobSitEvent(dob: MyUtils().convertDOBFromIDCard(listInfo[3])));
-      _genderController = TextEditingController(text: listInfo[4]);
+      dobController = TextEditingController(
+          text: MyUtils().convertDOBFromIDCard(listInfo[3]));
+      _sitBloc.eventController.sink.add(
+          FillDobSitEvent(dob: MyUtils().convertDOBFromIDCard(listInfo[3])));
+      genderController = TextEditingController(text: listInfo[4]);
       _sitBloc.eventController.sink
           .add(FillGenderSitEvent(gender: listInfo[4]));
-      _idNumberController = TextEditingController(text: listInfo[0]);
+      idNumberController = TextEditingController(text: listInfo[0]);
       _sitBloc.eventController.sink
           .add(FillIdNumberSitEvent(idNumber: listInfo[0]));
     }
@@ -140,8 +147,7 @@ class _IndentificationInformationScreenState
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     final ThemeData theme = ThemeData();
-
-    return StreamBuilder(
+    return StreamBuilder<SitState>(
       stream: _sitBloc.stateController.stream,
       builder: (context, snapshot) {
         return Material(
@@ -178,7 +184,7 @@ class _IndentificationInformationScreenState
               child: ElevatedButton(
                 onPressed: () {
                   _sitBloc.eventController.sink
-                      .add(SaveInformationEvent(context: context));
+                      .add(UpdateInformationDetailSitEvent(context: context));
                 },
                 style: ElevatedButton.styleFrom(
                   shape: RoundedRectangleBorder(
@@ -400,12 +406,10 @@ class _IndentificationInformationScreenState
                           ),
                           cursorColor: ColorConstant.primaryColor,
                           // ignore: unnecessary_null_comparison
-                          controller: (_fullNameController != null)
-                              ? _fullNameController
+                          controller: (fullNameController != null)
+                              ? fullNameController
                               : null,
-
                           enabled: false,
-
                           decoration: InputDecoration(
                             hintText: "Họ và tên",
                             border: const OutlineInputBorder(
@@ -460,7 +464,7 @@ class _IndentificationInformationScreenState
                           cursorColor: ColorConstant.primaryColor,
                           controller:
                               // ignore: unnecessary_null_comparison
-                              (_dobController != null) ? _dobController : null,
+                              (dobController != null) ? dobController : null,
                           enabled: false,
                           decoration: InputDecoration(
                             hintText: "Ngày tháng năm sinh",
@@ -515,8 +519,8 @@ class _IndentificationInformationScreenState
                           ),
                           cursorColor: ColorConstant.primaryColor,
                           // ignore: unnecessary_null_comparison
-                          controller: (_genderController != null)
-                              ? _genderController
+                          controller: (genderController != null)
+                              ? genderController
                               : null,
                           enabled: false,
                           decoration: InputDecoration(
@@ -572,8 +576,8 @@ class _IndentificationInformationScreenState
                           ),
                           cursorColor: ColorConstant.primaryColor,
                           // ignore: unnecessary_null_comparison
-                          controller: (_idNumberController != null)
-                              ? _idNumberController
+                          controller: (idNumberController != null)
+                              ? idNumberController
                               : null,
                           enabled: false,
                           decoration: InputDecoration(

@@ -1,11 +1,7 @@
 import 'dart:io';
-import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 
 import 'package:elssit/core/utils/color_constant.dart';
-import 'package:elssit/core/utils/image_constant.dart';
-
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:dotted_border/dotted_border.dart';
@@ -18,14 +14,14 @@ import 'package:elssit/process/bloc/education_bloc.dart';
 import 'package:elssit/process/event/education_event.dart';
 import 'package:elssit/process/state/education_state.dart';
 
-class EducationDetailScreen extends StatefulWidget {
-  const EducationDetailScreen({Key? key}) : super(key: key);
+class AddNewEducationScreen extends StatefulWidget {
+  const AddNewEducationScreen({Key? key}) : super(key: key);
 
   @override
-  State<EducationDetailScreen> createState() => _EducationDetailScreenState();
+  State<AddNewEducationScreen> createState() => _AddNewEducationScreenState();
 }
 
-class _EducationDetailScreenState extends State<EducationDetailScreen> {
+class _AddNewEducationScreenState extends State<AddNewEducationScreen> {
   TextEditingController dateInput = TextEditingController();
   final _educationBloc = EducationBloc();
 
@@ -37,7 +33,7 @@ class _EducationDetailScreenState extends State<EducationDetailScreen> {
 
   bool status = false;
   final List<String> eliteracyItems = [
-    'Chưa hòan thành đại học',
+    'Chưa hoàn thành đại học',
     'Hoàn thành bằng đại học',
     'Hoàn thành bằng thạc sĩ',
   ];
@@ -74,7 +70,8 @@ class _EducationDetailScreenState extends State<EducationDetailScreen> {
     final snapshot = await uploadTaskEducationImg!.whenComplete(() {});
     final urlDownload = await snapshot.ref.getDownloadURL();
     EducationImg = urlDownload;
-    _educationBloc.eventController.sink.add(EducationImgSitEvent(educationImg: EducationImg));
+    _educationBloc.eventController.sink
+        .add(EducationImgSitEvent(educationImg: EducationImg));
   }
 
   @override
@@ -150,7 +147,7 @@ class _EducationDetailScreenState extends State<EducationDetailScreen> {
                       decoration: BoxDecoration(
                         color: ColorConstant.whiteF3,
                         borderRadius:
-                        const BorderRadius.all(Radius.circular(15)),
+                            const BorderRadius.all(Radius.circular(15)),
                       ),
                       child: Theme(
                         data: theme.copyWith(
@@ -174,7 +171,7 @@ class _EducationDetailScreenState extends State<EducationDetailScreen> {
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius:
-                              const BorderRadius.all(Radius.circular(15)),
+                                  const BorderRadius.all(Radius.circular(15)),
                               borderSide: BorderSide(
                                 width: 1,
                                 color: ColorConstant.primaryColor,
@@ -203,17 +200,17 @@ class _EducationDetailScreenState extends State<EducationDetailScreen> {
                           items: eliteracyItems
                               .map(
                                 (item) => DropdownMenuItem<String>(
-                              value: item,
-                              child: Text(
-                                item,
-                                style: GoogleFonts.roboto(
-                                  fontSize: size.height * 0.02,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
+                                  value: item,
+                                  child: Text(
+                                    item,
+                                    style: GoogleFonts.roboto(
+                                      fontSize: size.height * 0.02,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          )
+                              )
                               .toList(),
                           onChanged: (value) {
                             _educationBloc.eventController.sink.add(
@@ -225,19 +222,19 @@ class _EducationDetailScreenState extends State<EducationDetailScreen> {
                       ),
                     ),
                     (snapshot.hasError &&
-                        (snapshot.error as Map<String, String>)
-                            .containsKey("educationLevel"))
+                            (snapshot.error as Map<String, String>)
+                                .containsKey("educationLevel"))
                         ? Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        (snapshot.error
-                        as Map<String, String>)["educationLevel"]!,
-                        style: TextStyle(
-                          color: ColorConstant.redFail,
-                          fontSize: size.height * 0.017,
-                        ),
-                      ),
-                    )
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              (snapshot.error
+                                  as Map<String, String>)["educationLevel"]!,
+                              style: TextStyle(
+                                color: ColorConstant.redFail,
+                                fontSize: size.height * 0.017,
+                              ),
+                            ),
+                          )
                         : const SizedBox(),
                     SizedBox(
                       height: size.height * 0.02,
@@ -342,87 +339,7 @@ class _EducationDetailScreenState extends State<EducationDetailScreen> {
                         ? Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              (snapshot.error
-                                  as Map<String, String>)["major"]!,
-                              style: TextStyle(
-                                color: ColorConstant.redFail,
-                                fontSize: size.height * 0.017,
-                              ),
-                            ),
-                          )
-                        : const SizedBox(),
-                    SizedBox(
-                      height: size.height * 0.02,
-                    ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Khóa học',
-                        style: GoogleFonts.roboto(
-                          color: ColorConstant.gray43,
-                          fontWeight: FontWeight.w400,
-                          fontSize: size.height * 0.02,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: size.height * 0.025,
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(
-                        bottom: size.height * 0.01,
-                      ),
-                      decoration: BoxDecoration(
-                        color: ColorConstant.whiteF3,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(15)),
-                      ),
-                      child: Theme(
-                        data: theme.copyWith(
-                          colorScheme: theme.colorScheme
-                              .copyWith(primary: ColorConstant.primaryColor),
-                        ),
-                        child: TextField(
-                          style: TextStyle(
-                            fontSize: size.width * 0.04,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          cursorColor: ColorConstant.primaryColor,
-                          controller: null,
-                          onChanged: (value) {
-                            _educationBloc.eventController.sink.add(
-                                FillCourseEducationEvent(
-                                    course: value.toString().trim()));
-                          },
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.only(
-                              left: size.width * 0.04,
-                            ),
-                            hintText: "Khóa học",
-                            border: const OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(15)),
-                              borderSide: BorderSide(
-                                width: 1,
-                                color: ColorConstant.primaryColor,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    (snapshot.hasError &&
-                            (snapshot.error as Map<String, String>)
-                                .containsKey("course"))
-                        ? Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              (snapshot.error
-                                  as Map<String, String>)["course"]!,
+                              (snapshot.error as Map<String, String>)["major"]!,
                               style: TextStyle(
                                 color: ColorConstant.redFail,
                                 fontSize: size.height * 0.017,
@@ -471,8 +388,8 @@ class _EducationDetailScreenState extends State<EducationDetailScreen> {
                           controller: null,
                           onChanged: (value) {
                             _educationBloc.eventController.sink.add(
-                                FillSchoolEducationEvent(
-                                    school: value.toString().trim()));
+                                FillSchoolNameEducationEvent(
+                                    schoolName: value.toString().trim()));
                           },
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.only(
@@ -759,7 +676,8 @@ class _EducationDetailScreenState extends State<EducationDetailScreen> {
                           onToggle: (val) {
                             setState(() {
                               status = val;
-                              _educationBloc.eventController.sink.add(GraduatedEducationEvent(isGraduated: status));
+                              _educationBloc.eventController.sink.add(
+                                  GraduatedEducationEvent(isGraduated: status));
                             });
                           },
                         ),
@@ -1029,7 +947,7 @@ class _EducationDetailScreenState extends State<EducationDetailScreen> {
                       child: ElevatedButton(
                         onPressed: () {
                           _educationBloc.eventController.sink
-                              .add(SaveEducationEvent(context: context));
+                              .add(AddNewEducationEvent(context: context));
                         },
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(

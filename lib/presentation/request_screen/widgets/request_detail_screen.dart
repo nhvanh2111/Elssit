@@ -20,6 +20,7 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
     TabBar createTabBar() {
       return TabBar(
         indicatorColor: ColorConstant.primaryColor,
+        labelPadding: const EdgeInsets.all(10),
         tabs: [
           SizedBox(
             width: size.width * 0.5,
@@ -212,10 +213,16 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      ImageConstant.icAva,
-                      height: size.height * 0.1,
-                      width: size.height * 0.1,
+                    SizedBox(
+                      height: size.height * 0.01,
+                    ),
+                    Text(
+                      "Người cần chăm sóc",
+                      style: GoogleFonts.roboto(
+                        fontWeight: FontWeight.w500,
+                        fontSize: size.height * 0.022,
+                        color: ColorConstant.primaryColor,
+                      ),
                     ),
                     SizedBox(
                       height: size.height * 0.015,
@@ -224,7 +231,7 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                       "Ngô Thị Thanh Ngân",
                       style: GoogleFonts.roboto(
                         fontWeight: FontWeight.w500,
-                        fontSize: size.height * 0.022,
+                        fontSize: size.height * 0.035,
                         color: Colors.black,
                       ),
                     ),
@@ -369,7 +376,6 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                             children: [
                               SizedBox(
                                 height: size.height * 0.03,
-
                               ),
                               const JobDescriptionPanel(),
                             ],

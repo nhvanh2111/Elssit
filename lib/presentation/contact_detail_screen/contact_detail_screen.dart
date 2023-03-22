@@ -1,9 +1,9 @@
-import 'package:elssit/core/models/sitter_models/sitter_detail_data_model.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/utils/globals.dart' as globals;
 import 'package:elssit/core/utils/color_constant.dart';
+import 'package:elssit/core/models/sitter_models/sitter_detail_data_model.dart';
 
 import 'package:elssit/process/bloc/sitter_bloc.dart';
 import 'package:elssit/process/event/sitter_event.dart';
@@ -26,7 +26,6 @@ class _ContactDetailScreenState extends State<ContactDetailScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     emailController = TextEditingController(text: globals.email);
     _sitBloc.eventController.sink.add(GetContactSitEvent());
@@ -54,10 +53,9 @@ class _ContactDetailScreenState extends State<ContactDetailScreen> {
             _sitBloc.eventController.sink
                 .add(FillDescriptionSitEvent(description: sitInfo.description));
             descriptionController =
-            TextEditingController(text: sitInfo.description);
-            print('Test description: ${sitInfo.description}');
-            _sitBloc.eventController.sink.add(SitOtherEvent());
+                TextEditingController(text: sitInfo.description);
 
+            _sitBloc.eventController.sink.add(SitOtherEvent());
           }
         }
         return Scaffold(
@@ -349,7 +347,6 @@ class _ContactDetailScreenState extends State<ContactDetailScreen> {
                               FillDescriptionSitEvent(
                                   description: value.toString()));
                         },
-
                         maxLines: 11,
                         style: TextStyle(
                           fontSize: size.width * 0.04,
@@ -398,7 +395,7 @@ class _ContactDetailScreenState extends State<ContactDetailScreen> {
                     child: ElevatedButton(
                       onPressed: () {
                         _sitBloc.eventController.sink
-                            .add(SaveContactEvent(context: context));
+                            .add(UpdateContactDetailSitEvent(context: context));
                       },
                       style: ElevatedButton.styleFrom(
                         shape: RoundedRectangleBorder(

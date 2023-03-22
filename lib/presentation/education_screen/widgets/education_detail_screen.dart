@@ -1,78 +1,145 @@
 import 'dart:io';
+import 'package:elssit/core/models/education_models/education_detail_data_model.dart';
+import 'package:elssit/core/models/education_models/education_detail_model.dart';
+import 'package:elssit/core/utils/my_utils.dart';
+import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
+import 'package:elssit/core/utils/color_constant.dart';
+
+import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter_switch/flutter_switch.dart';
-import 'package:elssit/core/utils/color_constant.dart';
-import 'package:image_picker/image_picker.dart';
 
-import 'package:elssit/process/bloc/certification_bloc.dart';
-import 'package:elssit/process/event/certification_event.dart';
-import 'package:elssit/process/state/certification_state.dart';
+import 'package:elssit/process/bloc/education_bloc.dart';
+import 'package:elssit/process/event/education_event.dart';
+import 'package:elssit/process/state/education_state.dart';
 
-class CertificationDetailScreen extends StatefulWidget {
-  const CertificationDetailScreen({Key? key}) : super(key: key);
+class EducationDetailScreen extends StatefulWidget {
+  const EducationDetailScreen({Key? key, required this.educationID})
+      : super(key: key);
+  final String educationID;
 
   @override
-  State<CertificationDetailScreen> createState() =>
-      _CertificationDetailScreenState();
+  State<EducationDetailScreen> createState() =>
+      _EducationDetailScreenState(educationID: educationID);
 }
 
-class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
+class _EducationDetailScreenState extends State<EducationDetailScreen> {
+  _EducationDetailScreenState({required this.educationID});
+  final String educationID;
+
   TextEditingController dateInput = TextEditingController();
-  final _certificationBloc = CertificationBloc();
+  final _educationBloc = EducationBloc();
 
-  //Front Card Img
-  String FrontCardImg = "";
-  late File imageFileFrontCardImg;
-  XFile? pickedFileFrontCardImg;
-  UploadTask? uploadTaskFrontCardImg;
-  bool isFrontCardImgCheck = false;
-
-  _getEducationImageFromGallery() async {
-    pickedFileFrontCardImg = (await ImagePicker().pickImage(
-      source: ImageSource.camera,
-    ));
-    if (pickedFileFrontCardImg != null) {
-      setState(() {
-        imageFileFrontCardImg = File(pickedFileFrontCardImg!.path);
-      });
-    }
-    isFrontCardImgCheck = true;
-    final path = 'els_sitter_images/${pickedFileFrontCardImg!.name}';
-    final file = File(pickedFileFrontCardImg!.path);
-    final ref = FirebaseStorage.instance.ref().child(path);
-    uploadTaskFrontCardImg = ref.putFile(file);
-
-    final snapshot = await uploadTaskFrontCardImg!.whenComplete(() {});
-    final urlDownload = await snapshot.ref.getDownloadURL();
-    FrontCardImg = urlDownload;
+  late var schoolNameController = TextEditingController();
+  late var gpaController = TextEditingController();
+  late var descriptionController = TextEditingController();
+  @override
+  void initState() {
+    dateInput.text = ""; //set the initial value of text field
+    super.initState();
+    _educationBloc.eventController.sink
+        .add(GetEducationDetailDataEvent(educationID: educationID));
   }
 
-  bool isChecked = false;
-  Color getColor(Set<MaterialState> states) {
-    const Set<MaterialState> interactiveStates = <MaterialState>{
-      MaterialState.pressed,
-      MaterialState.hovered,
-      MaterialState.focused,
-    };
-    if (states.any(interactiveStates.contains)) {
-      return Colors.blue;
+  bool status = false;
+  final List<String> eliteracyItems = [
+    'Chưa hòan thành đại học',
+    'Hoàn thành bằng đại học',
+    'Hoàn thành bằng thạc sĩ',
+  ];
+
+  final List<String> majorItems = [
+    'Không',
+    'Điều dưỡng',
+  ];
+
+  String? selectedValue;
+  String? majorStr;
+
+  //Education Img
+  String EducationImg = "";
+  late File imageFileEducationImg;
+  XFile? pickedFileEducationImg;
+  UploadTask? uploadTaskEducationImg;
+  bool isEducationImgCheck = false;
+
+  _getEducationImageFromGallery() async {
+    pickedFileEducationImg = (await ImagePicker().pickImage(
+      source: ImageSource.camera,
+    ));
+    if (pickedFileEducationImg != null) {
+      setState(() {
+        imageFileEducationImg = File(pickedFileEducationImg!.path);
+      });
     }
-    return ColorConstant.primaryColor;
+    isEducationImgCheck = true;
+    final path = 'els_sitter_images/${pickedFileEducationImg!.name}';
+    final file = File(pickedFileEducationImg!.path);
+    final ref = FirebaseStorage.instance.ref().child(path);
+    uploadTaskEducationImg = ref.putFile(file);
+
+    final snapshot = await uploadTaskEducationImg!.whenComplete(() {});
+    final urlDownload = await snapshot.ref.getDownloadURL();
+    EducationImg = urlDownload;
+    _educationBloc.eventController.sink
+        .add(EducationImgSitEvent(educationImg: EducationImg));
   }
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     final ThemeData theme = ThemeData();
-    return StreamBuilder<CertificationState>(
-      stream: _certificationBloc.stateController.stream,
+    return StreamBuilder<EducationState>(
+      stream: _educationBloc.stateController.stream,
       builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data is EducationDetailState) {
+            EducationDetailModel educationDetail =
+                (snapshot.data as EducationDetailState).education;
+
+            _educationBloc.eventController.sink.add(
+                ChooseEducationLevelEducationEvent(
+                    educationLevel: educationDetail.data.educationLevel));
+            selectedValue = educationDetail.data.educationLevel;
+
+            _educationBloc.eventController.sink.add(
+                ChooseMajorLevelEducationEvent(
+                    major: educationDetail.data.major));
+            majorStr = educationDetail.data.major;
+
+            _educationBloc.eventController.sink.add(
+                FillSchoolNameEducationEvent(
+                    schoolName: educationDetail.data.schoolName));
+            schoolNameController =
+                TextEditingController(text: educationDetail.data.schoolName);
+            // _educationBloc.eventController.sink.add(
+            //     ChooseStartDateEducationEvent(
+            //         startDate: MyUtils()
+            //             .convertInputDate(startDate)));
+            // _educationBloc.eventController.sink.add(ChooseEndDateEducationEvent(
+            //     endDate:
+            //         MyUtils().convertInputDate(educationDetail.data.endDate)));
+            // _educationBloc.eventController.sink
+            //     .add(FillGPAEducationEvent(gpa: educationDetail.data.gpa));
+            // gpaController =
+            //     TextEditingController(text: educationDetail.data.gpa);
+
+            _educationBloc.eventController.sink.add(
+                FillDescriptionEducationEvent(
+                    description: educationDetail.data.description));
+            descriptionController =
+                TextEditingController(text: educationDetail.data.description);
+
+            _educationBloc.eventController.sink.add(EducationOtherEvent());
+          }
+        }
         return Material(
           child: Scaffold(
             appBar: AppBar(
@@ -92,7 +159,7 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
               title: Padding(
                 padding: EdgeInsets.only(left: size.width * 0.005),
                 child: const Text(
-                  "Chứng Nhận & Giấy Phép",
+                  "Học Vấn",
                 ),
               ),
               titleTextStyle: GoogleFonts.roboto(
@@ -121,7 +188,7 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'Tiêu đề',
+                        'Trình độ học vấn',
                         style: GoogleFonts.roboto(
                           color: ColorConstant.gray43,
                           fontWeight: FontWeight.w400,
@@ -133,6 +200,9 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                       height: size.height * 0.025,
                     ),
                     Container(
+                      margin: EdgeInsets.only(
+                        bottom: size.height * 0.01,
+                      ),
                       decoration: BoxDecoration(
                         color: ColorConstant.whiteF3,
                         borderRadius:
@@ -143,25 +213,20 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                           colorScheme: theme.colorScheme
                               .copyWith(primary: ColorConstant.primaryColor),
                         ),
-                        child: TextField(
-                          style: TextStyle(
-                            fontSize: size.width * 0.04,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          cursorColor: ColorConstant.primaryColor,
-                          controller: null,
-                          // onChanged: (value) {
-                          //   _authenBloc.eventController.sink.add(InputUserNameEvent(
-                          //       username: value.toString().trim()));
-                          // },
+                        child: DropdownButtonFormField2(
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.only(
+                              top: size.height * 0.01,
                               left: size.width * 0.04,
+                              right: size.width * 0.035,
+                              bottom: size.height * 0.01,
                             ),
-                            hintText: "Tiêu đề của chứng nhận",
-                            border: const OutlineInputBorder(
-                              borderSide: BorderSide.none,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: const BorderSide(
+                                width: 0,
+                                style: BorderStyle.none,
+                              ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius:
@@ -172,16 +237,57 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                               ),
                             ),
                           ),
+                          hint: const Text(
+                            'Chọn trình độ học vấn',
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          icon: const Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            color: Colors.grey,
+                          ),
+                          iconSize: size.width * 0.06,
+                          buttonHeight: size.height * 0.07,
+                          buttonPadding: const EdgeInsets.all(0),
+                          dropdownWidth: 310,
+                          dropdownDecoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          items: eliteracyItems
+                              .map(
+                                (item) => DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(
+                                    item,
+                                    style: GoogleFonts.roboto(
+                                      fontSize: size.height * 0.02,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) {
+                            _educationBloc.eventController.sink.add(
+                                ChooseEducationLevelEducationEvent(
+                                    educationLevel: value.toString()));
+                          },
+                          value: selectedValue,
                         ),
                       ),
                     ),
                     (snapshot.hasError &&
                             (snapshot.error as Map<String, String>)
-                                .containsKey("title"))
+                                .containsKey("educationLevel"))
                         ? Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              (snapshot.error as Map<String, String>)["title"]!,
+                              (snapshot.error
+                                  as Map<String, String>)["educationLevel"]!,
                               style: TextStyle(
                                 color: ColorConstant.redFail,
                                 fontSize: size.height * 0.017,
@@ -195,7 +301,7 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'Đơn vị phát hành',
+                        'Chuyên ngành',
                         style: GoogleFonts.roboto(
                           color: ColorConstant.gray43,
                           fontWeight: FontWeight.w400,
@@ -207,6 +313,121 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                       height: size.height * 0.025,
                     ),
                     Container(
+                      margin: EdgeInsets.only(
+                        bottom: size.height * 0.01,
+                      ),
+                      decoration: BoxDecoration(
+                        color: ColorConstant.whiteF3,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(15)),
+                      ),
+                      child: Theme(
+                        data: theme.copyWith(
+                          colorScheme: theme.colorScheme
+                              .copyWith(primary: ColorConstant.primaryColor),
+                        ),
+                        child: DropdownButtonFormField2(
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.only(
+                              top: size.height * 0.01,
+                              left: size.width * 0.04,
+                              right: size.width * 0.035,
+                              bottom: size.height * 0.01,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: const BorderSide(
+                                width: 0,
+                                style: BorderStyle.none,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(15)),
+                              borderSide: BorderSide(
+                                width: 1,
+                                color: ColorConstant.primaryColor,
+                              ),
+                            ),
+                          ),
+                          hint: const Text(
+                            'Chọn chuyên ngành',
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          icon: const Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            color: Colors.grey,
+                          ),
+                          iconSize: size.width * 0.06,
+                          buttonHeight: size.height * 0.07,
+                          buttonPadding: const EdgeInsets.all(0),
+                          dropdownWidth: 310,
+                          dropdownDecoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          value: majorStr,
+                          items: majorItems
+                              .map(
+                                (item) => DropdownMenuItem<String>(
+                                  value: item,
+                                  child: Text(
+                                    item,
+                                    style: GoogleFonts.roboto(
+                                      fontSize: size.height * 0.02,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) {
+                            _educationBloc.eventController.sink.add(
+                                ChooseMajorLevelEducationEvent(
+                                    major: value.toString()));
+                          },
+                        ),
+                      ),
+                    ),
+                    (snapshot.hasError &&
+                            (snapshot.error as Map<String, String>)
+                                .containsKey("major"))
+                        ? Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              (snapshot.error as Map<String, String>)["major"]!,
+                              style: TextStyle(
+                                color: ColorConstant.redFail,
+                                fontSize: size.height * 0.017,
+                              ),
+                            ),
+                          )
+                        : const SizedBox(),
+                    SizedBox(
+                      height: size.height * 0.02,
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Trường',
+                        style: GoogleFonts.roboto(
+                          color: ColorConstant.gray43,
+                          fontWeight: FontWeight.w400,
+                          fontSize: size.height * 0.02,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: size.height * 0.025,
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(
+                        bottom: size.height * 0.01,
+                      ),
                       decoration: BoxDecoration(
                         color: ColorConstant.whiteF3,
                         borderRadius:
@@ -224,16 +445,17 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                           cursorColor: ColorConstant.primaryColor,
-                          controller: null,
-                          // onChanged: (value) {
-                          //   _authenBloc.eventController.sink.add(InputUserNameEvent(
-                          //       username: value.toString().trim()));
-                          // },
+                          controller: schoolNameController,
+                          onChanged: (value) {
+                            _educationBloc.eventController.sink.add(
+                                FillSchoolNameEducationEvent(
+                                    schoolName: value.toString().trim()));
+                          },
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.only(
                               left: size.width * 0.04,
                             ),
-                            hintText: "Đơn vị cấp chứng nhận",
+                            hintText: "Trường",
                             border: const OutlineInputBorder(
                               borderSide: BorderSide.none,
                             ),
@@ -251,12 +473,12 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                     ),
                     (snapshot.hasError &&
                             (snapshot.error as Map<String, String>)
-                                .containsKey("organization"))
+                                .containsKey("school"))
                         ? Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
                               (snapshot.error
-                                  as Map<String, String>)["organization"]!,
+                                  as Map<String, String>)["school"]!,
                               style: TextStyle(
                                 color: ColorConstant.redFail,
                                 fontSize: size.height * 0.017,
@@ -276,7 +498,7 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Ngày phát hành',
+                              'Từ',
                               style: GoogleFonts.roboto(
                                 color: ColorConstant.gray43,
                                 fontWeight: FontWeight.w400,
@@ -300,8 +522,8 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                                       onChanged: (date) {}, onConfirm: (date) {
                                     String dateInput =
                                         '${(date.day >= 10) ? date.day : '0${date.day}'}-${(date.month >= 10) ? date.month : '0${date.month}'}-${date.year}';
-                                    _certificationBloc.eventController.sink.add(
-                                        ChooseStartDateCertificationEvent(
+                                    _educationBloc.eventController.sink.add(
+                                        ChooseStartDateEducationEvent(
                                             startDate: dateInput));
                                   },
                                       currentTime: DateTime.now(),
@@ -320,9 +542,9 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                                         color: Colors.black),
                                     cursorColor: ColorConstant.primaryColor,
                                     controller: (snapshot.data
-                                            is DateStartCertificationState)
+                                            is DateStartEducationState)
                                         ? (snapshot.data
-                                                as DateStartCertificationState)
+                                                as DateStartEducationState)
                                             .dateStartController
                                         : null,
                                     enabled: false,
@@ -373,7 +595,7 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Ngày hết hạn',
+                              'Đến',
                               style: GoogleFonts.roboto(
                                 color: ColorConstant.gray43,
                                 fontWeight: FontWeight.w400,
@@ -397,8 +619,8 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                                       onChanged: (date) {}, onConfirm: (date) {
                                     String dateInput =
                                         '${(date.day >= 10) ? date.day : '0${date.day}'}-${(date.month >= 10) ? date.month : '0${date.month}'}-${date.year}';
-                                    _certificationBloc.eventController.sink.add(
-                                        ChooseEndDateCertificationEvent(
+                                    _educationBloc.eventController.sink.add(
+                                        ChooseEndDateEducationEvent(
                                             endDate: dateInput));
                                   },
                                       currentTime: DateTime.now(),
@@ -416,12 +638,12 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                                         fontSize: size.width * 0.04,
                                         color: Colors.black),
                                     cursorColor: ColorConstant.primaryColor,
-                                    controller: (snapshot.data
-                                            is DateEndCertificationState)
-                                        ? (snapshot.data
-                                                as DateEndCertificationState)
-                                            .dateEndController
-                                        : null,
+                                    controller:
+                                        (snapshot.data is DateEndEducationState)
+                                            ? (snapshot.data
+                                                    as DateEndEducationState)
+                                                .dateEndController
+                                            : null,
                                     enabled: false,
                                     decoration: InputDecoration(
                                       contentPadding: EdgeInsets.only(
@@ -467,29 +689,6 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                     SizedBox(
                       height: size.height * 0.01,
                     ),
-                    // (snapshot.hasError &&
-                    //         (snapshot.error as Map<String, String>)
-                    //             .containsKey("time"))
-                    //     ? SizedBox(
-                    //         width: size.width,
-                    //         child: Padding(
-                    //           padding: EdgeInsets.only(
-                    //             top: size.height * 0.02,
-                    //           ),
-                    //           child: Text(
-                    //             (snapshot.error
-                    //                 as Map<String, String>)["time"]!,
-                    //             textAlign: TextAlign.center,
-                    //             style: TextStyle(
-                    //               color: ColorConstant.redErrorText,
-                    //               fontSize: size.height * 0.016,
-                    //               height: 0.01,
-                    //             ),
-                    //           ),
-                    //         ),
-                    //       )
-                    //     : const SizedBox(),
-
                     (snapshot.hasError &&
                             (snapshot.error as Map<String, String>)
                                 .containsKey("time"))
@@ -504,35 +703,43 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                             ),
                           )
                         : const SizedBox(),
+                    SizedBox(
+                      height: size.height * 0.02,
+                    ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Checkbox(
-                          checkColor: Colors.white,
-                          fillColor:
-                              MaterialStateProperty.resolveWith(getColor),
-                          value: isChecked,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              isChecked = value!;
-                            });
-                          },
-                        ),
-                        SizedBox(
-                          width: size.width*0.7,
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              'Chứng nhận/ giấy phép này không hết hạn',
-                              maxLines: 2,
-                              style: GoogleFonts.roboto(
-                                color: ColorConstant.gray43,
-                                fontWeight: FontWeight.w400,
-                                fontSize: size.height * 0.02,
-                              ),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Đã tốt nghiệp',
+                            style: GoogleFonts.roboto(
+                              color: ColorConstant.gray43,
+                              fontWeight: FontWeight.w400,
+                              fontSize: size.height * 0.02,
                             ),
                           ),
+                        ),
+                        SizedBox(
+                          width: size.width * 0.03,
+                        ),
+                        FlutterSwitch(
+                          activeColor: ColorConstant.primaryColor,
+                          width: 45.0,
+                          height: 25.0,
+                          toggleSize: 20.0,
+                          value: status,
+                          borderRadius: 30.0,
+                          // padding: 8.0,
+                          showOnOff: false,
+                          onToggle: (val) {
+                            setState(() {
+                              status = val;
+                              _educationBloc.eventController.sink.add(
+                                  GraduatedEducationEvent(isGraduated: status));
+                            });
+                          },
                         ),
                       ],
                     ),
@@ -542,7 +749,75 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'ID xác thực (không bắt buộc)',
+                        'GPA (không bắt buộc)',
+                        style: GoogleFonts.roboto(
+                          color: ColorConstant.gray43,
+                          fontWeight: FontWeight.w400,
+                          fontSize: size.height * 0.02,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: size.height * 0.02,
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        margin: EdgeInsets.only(
+                          bottom: size.height * 0.01,
+                        ),
+                        decoration: BoxDecoration(
+                          color: ColorConstant.whiteF3,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(15)),
+                        ),
+                        width: size.width * 0.3,
+                        child: Theme(
+                          data: theme.copyWith(
+                            colorScheme: theme.colorScheme
+                                .copyWith(primary: ColorConstant.primaryColor),
+                          ),
+                          child: TextField(
+                            style: TextStyle(
+                              fontSize: size.width * 0.04,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            onChanged: (value) {
+                              _educationBloc.eventController.sink.add(
+                                  FillGPAEducationEvent(
+                                      gpa: value.toString().trim()));
+                            },
+                            cursorColor: ColorConstant.primaryColor,
+                            controller: gpaController,
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.only(
+                                left: size.width * 0.04,
+                              ),
+                              hintText: "GPA",
+                              border: const OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(15)),
+                                borderSide: BorderSide(
+                                  width: 1,
+                                  color: ColorConstant.primaryColor,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: size.height * 0.02,
+                    ),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Miêu tả (không bắt buộc)',
                         style: GoogleFonts.roboto(
                           color: ColorConstant.gray43,
                           fontWeight: FontWeight.w400,
@@ -554,6 +829,9 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                       height: size.height * 0.025,
                     ),
                     Container(
+                      margin: EdgeInsets.only(
+                        bottom: size.height * 0.01,
+                      ),
                       decoration: BoxDecoration(
                         color: ColorConstant.whiteF3,
                         borderRadius:
@@ -565,22 +843,25 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                               .copyWith(primary: ColorConstant.primaryColor),
                         ),
                         child: TextField(
+                          maxLines: 11,
                           style: TextStyle(
                             fontSize: size.width * 0.04,
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
                           ),
                           cursorColor: ColorConstant.primaryColor,
-                          controller: null,
-                          // onChanged: (value) {
-                          //   _authenBloc.eventController.sink.add(InputUserNameEvent(
-                          //       username: value.toString().trim()));
-                          // },
+                          controller: descriptionController,
+                          onChanged: (value) {
+                            _educationBloc.eventController.sink.add(
+                                FillDescriptionEducationEvent(
+                                    description: value.toString().trim()));
+                          },
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.only(
+                              top: size.width * 0.1,
                               left: size.width * 0.04,
                             ),
-                            hintText: "....",
+                            hintText: "...",
                             border: const OutlineInputBorder(
                               borderSide: BorderSide.none,
                             ),
@@ -602,7 +883,7 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'URL xác thực (không bắt buộc)',
+                        'Chứng chỉ đã tốt nghiệp',
                         style: GoogleFonts.roboto(
                           color: ColorConstant.gray43,
                           fontWeight: FontWeight.w400,
@@ -613,67 +894,7 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                     SizedBox(
                       height: size.height * 0.025,
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: ColorConstant.whiteF3,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(15)),
-                      ),
-                      child: Theme(
-                        data: theme.copyWith(
-                          colorScheme: theme.colorScheme
-                              .copyWith(primary: ColorConstant.primaryColor),
-                        ),
-                        child: TextField(
-                          style: TextStyle(
-                            fontSize: size.width * 0.04,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          cursorColor: ColorConstant.primaryColor,
-                          controller: null,
-                          // onChanged: (value) {
-                          //   _authenBloc.eventController.sink.add(InputUserNameEvent(
-                          //       username: value.toString().trim()));
-                          // },
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.only(
-                              left: size.width * 0.04,
-                            ),
-                            hintText: ".....",
-                            border: const OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(15)),
-                              borderSide: BorderSide(
-                                width: 1,
-                                color: ColorConstant.primaryColor,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: size.height * 0.02,
-                    ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'Chứng chỉ',
-                        style: GoogleFonts.roboto(
-                          color: ColorConstant.gray43,
-                          fontWeight: FontWeight.w400,
-                          fontSize: size.height * 0.02,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: size.height * 0.025,
-                    ),
-                    (!isFrontCardImgCheck)
+                    (!isEducationImgCheck)
                         ? DottedBorder(
                             color: Colors.grey.withOpacity(0.3),
                             dashPattern: const [12, 8],
@@ -726,7 +947,7 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                                 borderRadius:
                                     BorderRadius.circular(size.height * 0.02),
                                 image: DecorationImage(
-                                    image: FileImage(imageFileFrontCardImg),
+                                    image: FileImage(imageFileEducationImg),
                                     fit: BoxFit.fill),
                               ),
                               child: GestureDetector(
@@ -754,12 +975,12 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                     ),
                     (snapshot.hasError &&
                             (snapshot.error as Map<String, String>)
-                                .containsKey("certificationImg"))
+                                .containsKey("educationImg"))
                         ? Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
                               (snapshot.error
-                                  as Map<String, String>)["certificationImg"]!,
+                                  as Map<String, String>)["educationImg"]!,
                               style: TextStyle(
                                 color: ColorConstant.redFail,
                                 fontSize: size.height * 0.017,
@@ -785,8 +1006,9 @@ class _CertificationDetailScreenState extends State<CertificationDetailScreen> {
                       height: size.height * 0.07,
                       child: ElevatedButton(
                         onPressed: () {
-                          _certificationBloc.eventController.sink
-                              .add(SaveCertificationEvent());
+                          _educationBloc.eventController.sink.add(
+                              UpdateEducationEvent(
+                                  educationID: educationID, context: context));
                         },
                         style: ElevatedButton.styleFrom(
                           shape: RoundedRectangleBorder(

@@ -19,9 +19,10 @@ class _RequestScreenState extends State<RequestScreen> {
     TabBar createTabBar() {
       return TabBar(
         indicatorColor: ColorConstant.primaryColor,
+        labelPadding: const EdgeInsets.all(10),
         tabs: [
           SizedBox(
-            width: size.width*0.5,
+            width: size.width * 0.5,
             child: const Text(
               "Chờ xác nhận",
               textAlign: TextAlign.center,
@@ -32,7 +33,7 @@ class _RequestScreenState extends State<RequestScreen> {
             ),
           ),
           SizedBox(
-            width: size.width*0.5,
+            width: size.width * 0.5,
             child: const Text(
               textAlign: TextAlign.center,
               "Đã xác nhận",
@@ -42,7 +43,6 @@ class _RequestScreenState extends State<RequestScreen> {
               ),
             ),
           ),
-
         ],
         isScrollable: true,
       );
@@ -52,19 +52,18 @@ class _RequestScreenState extends State<RequestScreen> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-
           toolbarHeight: size.height * 0.08,
           // bottomOpacity: 0.0,
           elevation: 0.0,
           automaticallyImplyLeading: false,
           leading: ImageIcon(
             AssetImage(ImageConstant.appLogo),
-            size: size.height*0.03,
+            size: size.height * 0.03,
             color: ColorConstant.primaryColor,
           ),
           backgroundColor: Colors.white,
           title: Container(
-            decoration: const  BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.white,
             ),
             child: Container(
@@ -107,7 +106,9 @@ class _RequestScreenState extends State<RequestScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(height: size.height*0.03,),
+                      SizedBox(
+                        height: size.height * 0.03,
+                      ),
                       const WaitingForConfirmPanel(),
                     ],
                   ),
@@ -123,14 +124,15 @@ class _RequestScreenState extends State<RequestScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      SizedBox(height: size.height*0.03,),
+                      SizedBox(
+                        height: size.height * 0.03,
+                      ),
                       const WaitingForConfirmPanel(),
                     ],
                   ),
                 ),
               ),
             ),
-
           ]),
         ),
       ),

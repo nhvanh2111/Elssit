@@ -1,12 +1,18 @@
-import 'package:elssit/core/utils/color_constant.dart';
-import 'package:elssit/core/utils/image_constant.dart';
+import 'package:elssit/presentation/widget/dialog/dialog.dart';
 
-import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:elssit/presentation/widget/dialog/forward_dialog.dart';
+
 import 'package:hive/hive.dart';
 import 'package:provider/provider.dart';
-
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import '../../fire_base/provider/google_sign_in_provider.dart';
+
+import 'package:elssit/core/utils/color_constant.dart';
+import 'package:elssit/core/utils/image_constant.dart';
+import 'package:elssit/core/utils/globals.dart' as globals;
 import '../../process/bloc/authen_bloc.dart';
 import '../../process/event/authen_event.dart';
 
@@ -21,10 +27,11 @@ class _AccountScreenState extends State<AccountScreen> {
   final _elsBox = Hive.box('elsBox');
   final _authenBloc = AuthenBloc();
 
+  var builde;
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    final ThemeData theme = ThemeData();
     return Material(
       child: Container(
         width: size.width,
@@ -43,11 +50,6 @@ class _AccountScreenState extends State<AccountScreen> {
               SizedBox(
                 height: size.height * 0.06,
               ),
-              // Padding(
-              //   padding: EdgeInsets.only(
-              //     left: size.width * 0.05,
-              //     right: size.width * 0.05,
-              //   ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -81,7 +83,6 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                 ],
               ),
-              //),
               Padding(
                 padding: EdgeInsets.only(
                   top: size.height * 0.02,
@@ -103,7 +104,7 @@ class _AccountScreenState extends State<AccountScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Van Anh Nguyen',
+                          globals.sitterName,
                           style: GoogleFonts.roboto(
                             fontSize: size.height * 0.03,
                             fontWeight: FontWeight.w500,
@@ -139,17 +140,12 @@ class _AccountScreenState extends State<AccountScreen> {
               SizedBox(
                 height: size.height * 0.03,
               ),
-              // Padding(
-              //   padding: EdgeInsets.only(
-              //     left: size.height * 0.03,
-              //     right: size.height * 0.03,
-              //   ),
               Container(
                 width: size.width,
                 height: size.height * 0.09,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(18.5)),
+                  borderRadius: const BorderRadius.all(Radius.circular(18.5)),
                   border: Border.all(
                     color: ColorConstant.whiteEE,
                   ),
@@ -200,17 +196,12 @@ class _AccountScreenState extends State<AccountScreen> {
               SizedBox(
                 height: size.height * 0.025,
               ),
-              // Padding(
-              //   padding: EdgeInsets.only(
-              //     left: size.height * 0.03,
-              //     right: size.height * 0.03,
-              //   ),
               Container(
                 width: size.width,
                 height: size.height * 0.09,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(18.5)),
+                  borderRadius: const BorderRadius.all(Radius.circular(18.5)),
                   border: Border.all(
                     color: ColorConstant.whiteEE,
                   ),
@@ -267,7 +258,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 height: size.height * 0.09,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(18.5)),
+                  borderRadius: const BorderRadius.all(Radius.circular(18.5)),
                   border: Border.all(
                     color: ColorConstant.whiteEE,
                   ),
@@ -318,24 +309,19 @@ class _AccountScreenState extends State<AccountScreen> {
               SizedBox(
                 height: size.height * 0.025,
               ),
-              // Padding(
-              //   padding: EdgeInsets.only(
-              //     left: size.height * 0.03,
-              //     right: size.height * 0.03,
-              //   ),
               Container(
                 width: size.width,
                 height: size.height * 0.09,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(18.5)),
+                  borderRadius: const BorderRadius.all(Radius.circular(18.5)),
                   border: Border.all(
                     color: ColorConstant.whiteEE,
                   ),
                 ),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, '/educationDetailScreen');
+                    Navigator.pushNamed(context, '/educationScreen');
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -379,24 +365,19 @@ class _AccountScreenState extends State<AccountScreen> {
               SizedBox(
                 height: size.height * 0.025,
               ),
-              // Padding(
-              //   padding: EdgeInsets.only(
-              //     left: size.height * 0.03,
-              //     right: size.height * 0.03,
-              //   ),
               Container(
                 width: size.width,
                 height: size.height * 0.09,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(18.5)),
+                  borderRadius: const BorderRadius.all(Radius.circular(18.5)),
                   border: Border.all(
                     color: ColorConstant.whiteEE,
                   ),
                 ),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, '/certificationDetailScreen');
+                    Navigator.pushNamed(context, '/certificationScreen');
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -440,31 +421,31 @@ class _AccountScreenState extends State<AccountScreen> {
               SizedBox(
                 height: size.height * 0.025,
               ),
-              // Padding(
-              //   padding: EdgeInsets.only(
-              //     left: size.height * 0.03,
-              //     right: size.height * 0.03,
-              //   ),
               Container(
                 width: size.width,
                 height: size.height * 0.09,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(18.5)),
+                  borderRadius: const BorderRadius.all(Radius.circular(18.5)),
                   border: Border.all(
                     color: ColorConstant.whiteEE,
                   ),
                 ),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, '/achievementDetailScreen');
+                    // QuickAlert.show(
+                    //   context: context,
+                    //   type: QuickAlertType.success,
+                    //   text: 'Hahaha',
+                    // );
+                    Navigator.pushNamed(context, '/packageScreen');
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Image.asset(
-                        ImageConstant.ic_prize,
+                        ImageConstant.ic_account,
                         height: size.height * 0.1,
                         width: size.height * 0.08,
                       ),
@@ -472,7 +453,7 @@ class _AccountScreenState extends State<AccountScreen> {
                         width: size.width * 0.005,
                       ),
                       Text(
-                        'Giải thưởng & Thành tích',
+                        'Gói dịch vụ của bạn',
                         style: GoogleFonts.roboto(
                           color: Colors.black,
                           fontWeight: FontWeight.w500,
@@ -498,34 +479,90 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                 ),
               ),
+              // // Padding(
+              // //   padding: EdgeInsets.only(
+              // //     left: size.height * 0.03,
+              // //     right: size.height * 0.03,
+              // //   ),
+
+              // Container(
+              //   width: size.width,
+              //   height: size.height * 0.09,
+              //   decoration: BoxDecoration(
+              //     color: Colors.white,
+
+              //     borderRadius: const BorderRadius.all(Radius.circular(18.5)),
+
+              //     border: Border.all(
+              //       color: ColorConstant.whiteEE,
+              //     ),
+              //   ),
+              //   child: GestureDetector(
+              //     onTap: () {
+              //       Navigator.pushNamed(context, '/achievementDetailScreen');
+              //     },
+              //     child: Row(
+              //       mainAxisAlignment: MainAxisAlignment.start,
+              //       crossAxisAlignment: CrossAxisAlignment.center,
+              //       children: [
+              //         Image.asset(
+              //           ImageConstant.ic_prize,
+              //           height: size.height * 0.1,
+              //           width: size.height * 0.08,
+              //         ),
+              //         SizedBox(
+              //           width: size.width * 0.005,
+              //         ),
+              //         Text(
+              //           'Giải thưởng & Thành tích',
+              //           style: GoogleFonts.roboto(
+              //             color: Colors.black,
+              //             fontWeight: FontWeight.w500,
+              //             fontSize: size.height * 0.022,
+              //           ),
+              //         ),
+              //         Expanded(
+              //           child: Align(
+              //             alignment: Alignment.centerRight,
+              //             child: Padding(
+              //               padding: EdgeInsets.only(
+              //                 right: size.width * 0.04,
+              //               ),
+              //               child: Icon(
+              //                 Icons.add,
+              //                 size: size.height * 0.03,
+              //                 color: ColorConstant.primaryColor,
+              //               ),
+              //             ),
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
               SizedBox(
                 height: size.height * 0.025,
               ),
-              // Padding(
-              //   padding: EdgeInsets.only(
-              //     left: size.height * 0.03,
-              //     right: size.height * 0.03,
-              //   ),
               Container(
                 width: size.width,
                 height: size.height * 0.09,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(18.5)),
+                  borderRadius: const BorderRadius.all(Radius.circular(18.5)),
                   border: Border.all(
                     color: ColorConstant.whiteEE,
                   ),
                 ),
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pushNamed(context, '/workExperienceDetailScreen');
+                    Navigator.pushNamed(context, '/workExperienceScreen');
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Image.asset(
-                        ImageConstant.ic_prize,
+                        ImageConstant.icWorkExperience,
                         height: size.height * 0.1,
                         width: size.height * 0.08,
                       ),
@@ -562,181 +599,12 @@ class _AccountScreenState extends State<AccountScreen> {
               SizedBox(
                 height: size.height * 0.025,
               ),
-
-              // Container(
-              //   width: size.width,
-              //   height: size.height * 0.09,
-              //   decoration: BoxDecoration(
-              //     color: Colors.white,
-              //     borderRadius: BorderRadius.all(Radius.circular(18.5)),
-              //     border: Border.all(
-              //       color: ColorConstant.whiteEE,
-              //     ),
-              //   ),
-              //   child: GestureDetector(
-              //     onTap: () {
-              //       Navigator.pushNamed(context, '/signUpScreen');
-              //     },
-              //     child: Row(
-              //       mainAxisAlignment: MainAxisAlignment.start,
-              //       crossAxisAlignment: CrossAxisAlignment.center,
-              //       children: [
-              //         Image.asset(
-              //           ImageConstant.ic_payment,
-              //           height: size.height * 0.1,
-              //           width: size.height * 0.08,
-              //         ),
-              //         SizedBox(
-              //           width: size.width * 0.005,
-              //         ),
-              //         Text(
-              //           'Hội thảo & Tập huấn',
-              //           style: GoogleFonts.roboto(
-              //             color: Colors.black,
-              //             fontWeight: FontWeight.w500,
-              //             fontSize: size.height * 0.022,
-              //           ),
-              //         ),
-              //         Expanded(
-              //           child: Align(
-              //             alignment: Alignment.centerRight,
-              //             child: Padding(
-              //               padding: EdgeInsets.only(
-              //                 right: size.width * 0.04,
-              //               ),
-              //               child: Icon(
-              //                 Icons.add,
-              //                 size: size.height * 0.03,
-              //                 color: ColorConstant.primaryColor,
-              //               ),
-              //             ),
-              //           ),
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-
-              // ),
-              // SizedBox(
-              //   height: size.height * 0.025,
-              // ),
-
-              // Container(
-              //   width: size.width,
-              //   height: size.height * 0.09,
-              //   decoration: BoxDecoration(
-              //     color: Colors.white,
-              //     borderRadius: BorderRadius.all(Radius.circular(18.5)),
-              //     border: Border.all(
-              //       color: ColorConstant.whiteEE,
-              //     ),
-              //   ),
-              //   child: GestureDetector(
-              //     onTap: () {
-              //       Navigator.pushNamed(context, '/signUpScreen');
-              //     },
-              //     child: Row(
-              //       mainAxisAlignment: MainAxisAlignment.start,
-              //       crossAxisAlignment: CrossAxisAlignment.center,
-              //       children: [
-              //         Image.asset(
-              //           ImageConstant.ic_skill,
-              //           height: size.height * 0.1,
-              //           width: size.height * 0.08,
-              //         ),
-              //         SizedBox(
-              //           width: size.width * 0.005,
-              //         ),
-              //         Text(
-              //           'Kĩ năng',
-              //           style: GoogleFonts.roboto(
-              //             color: Colors.black,
-              //             fontWeight: FontWeight.w500,
-              //             fontSize: size.height * 0.022,
-              //           ),
-              //         ),
-              //         Expanded(
-              //           child: Align(
-              //             alignment: Alignment.centerRight,
-              //             child: Padding(
-              //               padding: EdgeInsets.only(
-              //                 right: size.width * 0.04,
-              //               ),
-              //               child: Icon(
-              //                 Icons.add,
-              //                 size: size.height * 0.03,
-              //                 color: ColorConstant.primaryColor,
-              //               ),
-              //             ),
-              //           ),
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // ),
-
-              // Container(
-              //   width: size.width,
-              //   height: size.height * 0.09,
-              //   decoration: BoxDecoration(
-              //     color: Colors.white,
-              //     borderRadius: BorderRadius.all(Radius.circular(18.5)),
-              //     border: Border.all(
-              //       color: ColorConstant.whiteEE,
-              //     ),
-              //   ),
-              //   child: GestureDetector(
-              //     onTap: () {
-              //       Navigator.pushNamed(context, '/signUpScreen');
-              //     },
-              //     child: Row(
-              //       mainAxisAlignment: MainAxisAlignment.start,
-              //       crossAxisAlignment: CrossAxisAlignment.center,
-              //       children: [
-              //         Image.asset(
-              //           ImageConstant.ic_skill,
-              //           height: size.height * 0.1,
-              //           width: size.height * 0.08,
-              //         ),
-              //         SizedBox(
-              //           width: size.width * 0.005,
-              //         ),
-              //         Text(
-              //           'Kĩ năng',
-              //           style: GoogleFonts.roboto(
-              //             color: Colors.black,
-              //             fontWeight: FontWeight.w500,
-              //             fontSize: size.height * 0.022,
-              //           ),
-              //         ),
-              //         Expanded(
-              //           child: Align(
-              //             alignment: Alignment.centerRight,
-              //             child: Padding(
-              //               padding: EdgeInsets.only(
-              //                 right: size.width * 0.04,
-              //               ),
-              //               child: Icon(
-              //                 Icons.add,
-              //                 size: size.height * 0.03,
-              //                 color: ColorConstant.primaryColor,
-              //               ),
-              //             ),
-              //           ),
-              //         ),
-              //       ],
-              //     ),
-              //   ),
-              // ),
-              // SizedBox(
-              //   height: size.height * 0.025,
-              // ),
               Container(
                 width: size.width,
                 height: size.height * 0.09,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(18.5)),
+                  borderRadius: const BorderRadius.all(Radius.circular(18.5)),
                   border: Border.all(
                     color: ColorConstant.whiteEE,
                   ),

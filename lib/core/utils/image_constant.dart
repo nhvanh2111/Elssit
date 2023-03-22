@@ -20,7 +20,7 @@ class ImageConstant {
   static String ic_payment = 'assets/images/ic_payment.png';
   static String ic_prize = 'assets/images/ic_prize.png';
   static String ic_profile = 'assets/images/ic_profile.png';
-  static String ic_skill = 'assets/images/ic_skill.png';
+  static String icWorkExperience = 'assets/images/ic_skill.png';
   static String icHome = 'assets/images/home_ic.png';
   static String icService = "assets/images/service_ic.png";
   static String icSchedule = "assets/images/schedule_ic.png";
@@ -32,4 +32,12 @@ class ImageConstant {
   static String icEditAvator = 'assets/images/edit_avatar_ic.png';
   static String ic_logout = "assets/images/ic_logout.png";
   static String icAva = "assets/images/ava_ic.png";
+  static String icNotification = "assets/images/notification_ic.png";
+  static String icMore = 'assets/images/more_ic.png';
+  static String icManageElder1 = 'assets/images/manage_elder_ic1.png';
+  static String icHistory2 = "assets/images/history_ic2.png";
+  static String icCalendar = 'assets/images/calendar_ic.png';
+  static String icDot = "assets/images/dot_ic.png";
+  static String imgLoading = "assets/images/loading_img.png";
+  static String imgForWard = "assets/images/img_forward.png";
 }

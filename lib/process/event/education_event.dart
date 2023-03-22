@@ -4,13 +4,11 @@ abstract class EducationEvent {}
 
 class ChooseStartDateEducationEvent extends EducationEvent {
   ChooseStartDateEducationEvent({required this.startDate});
-
   String startDate;
 }
 
 class ChooseEndDateEducationEvent extends EducationEvent {
   ChooseEndDateEducationEvent({required this.endDate});
-
   String endDate;
 }
 
@@ -24,14 +22,9 @@ class ChooseMajorLevelEducationEvent extends EducationEvent {
   String major;
 }
 
-class FillCourseEducationEvent extends EducationEvent {
-  FillCourseEducationEvent({required this.course});
-  String course;
-}
-
-class FillSchoolEducationEvent extends EducationEvent {
-  FillSchoolEducationEvent({required this.school});
-  String school;
+class FillSchoolNameEducationEvent extends EducationEvent {
+  FillSchoolNameEducationEvent({required this.schoolName});
+  String schoolName;
 }
 
 class FillGPAEducationEvent extends EducationEvent {
@@ -48,11 +41,40 @@ class EducationImgSitEvent extends EducationEvent {
   EducationImgSitEvent({required this.educationImg});
   String educationImg;
 }
-class GraduatedEducationEvent extends EducationEvent{
+
+class GraduatedEducationEvent extends EducationEvent {
   GraduatedEducationEvent({required this.isGraduated});
   bool isGraduated;
 }
-class SaveEducationEvent extends EducationEvent {
-  SaveEducationEvent({required this.context});
-  BuildContext context;
+// class SaveEducationEvent extends EducationEvent {
+//   SaveEducationEvent({required this.context});
+//   BuildContext context;
+// }
+
+class AddNewEducationEvent extends EducationEvent {
+  AddNewEducationEvent({required this.context});
+  final BuildContext context;
 }
+
+class GetEducationDetailDataEvent extends EducationEvent {
+  GetEducationDetailDataEvent({required this.educationID});
+  final String educationID;
+}
+
+class GetAllEducationEvent extends EducationEvent {
+  GetAllEducationEvent();
+}
+
+class UpdateEducationEvent extends EducationEvent {
+  UpdateEducationEvent({required this.educationID, required this.context});
+  final String educationID;
+  final BuildContext context;
+}
+
+class DeleteEducationEvent extends EducationEvent {
+  DeleteEducationEvent({required this.educationID, required this.context});
+  final String educationID;
+  final BuildContext context;
+}
+
+class EducationOtherEvent extends EducationEvent {}

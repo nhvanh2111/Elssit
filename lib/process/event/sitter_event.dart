@@ -82,16 +82,14 @@ class UpdateContactDetailSitEvent extends SitEvent {
   final BuildContext context;
 }
 
-class SaveContactEvent extends SitEvent {
-  SaveContactEvent({required this.context});
+class GetInformationEvent extends SitEvent {
+  GetInformationEvent({required this.context});
   final BuildContext context;
 }
 
-class SaveInformationEvent extends SitEvent {
-  SaveInformationEvent({required this.context});
+class UpdateInformationDetailSitEvent extends SitEvent {
+  UpdateInformationDetailSitEvent({required this.context});
   final BuildContext context;
 }
 
-class SitOtherEvent extends SitEvent{
-
-}
+class SitOtherEvent extends SitEvent {}

@@ -1,36 +1,37 @@
-import 'package:elssit/presentation/achievement_detail_screen/achievement_detail_screen.dart';
-import 'package:elssit/presentation/achievement_detail_screen/widgets/achievement_item.dart';
-import 'package:elssit/process/bloc/achievement_bloc.dart';
-import 'package:elssit/process/event/achievement_event.dart';
-import 'package:elssit/process/state/achievement_state.dart';
+import 'package:elssit/presentation/education_screen/widgets/education_detail_screen.dart';
+import 'package:elssit/presentation/education_screen/widgets/education_item.dart';
+import 'package:elssit/presentation/loading_screen/loading_screen.dart';
+
+import 'package:elssit/process/bloc/education_bloc.dart';
+import 'package:elssit/process/event/education_event.dart';
+import 'package:elssit/process/state/education_state.dart';
 import 'package:flutter/Material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/utils/color_constant.dart';
-import '../splash_screen/splash_screen.dart';
 
-class AchievementScreen extends StatefulWidget {
-  const AchievementScreen({Key? key}) : super(key: key);
+class EducationScreen extends StatefulWidget {
+  const EducationScreen({Key? key}) : super(key: key);
 
   @override
-  State<AchievementScreen> createState() => _AchievementScreenState();
+  State<EducationScreen> createState() => _EducationScreenState();
 }
 
-class _AchievementScreenState extends State<AchievementScreen> {
-  final _achievementBloc = AchievementBloc();
+class _EducationScreenState extends State<EducationScreen> {
+  final _educationBloc = EducationBloc();
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _achievementBloc.eventController.sink.add(GetAllAchievementEvent());
+    _educationBloc.eventController.sink.add(GetAllEducationEvent());
   }
 
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-    return StreamBuilder<AchievementState>(
-      stream: _achievementBloc.stateController.stream,
+    return StreamBuilder<EducationState>(
+      stream: _educationBloc.stateController.stream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Scaffold(
@@ -49,7 +50,7 @@ class _AchievementScreenState extends State<AchievementScreen> {
               title: const Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "Giải Thưởng & Thành Tích",
+                  "Học vấn",
                 ),
               ),
               titleTextStyle: GoogleFonts.roboto(
@@ -60,7 +61,7 @@ class _AchievementScreenState extends State<AchievementScreen> {
             ),
             floatingActionButton: FloatingActionButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/addNewAchievementScreen');
+                Navigator.pushNamed(context, '/addNewEducationScreen');
               },
               elevation: 0.0,
               backgroundColor: ColorConstant.primaryColor,
@@ -77,8 +78,8 @@ class _AchievementScreenState extends State<AchievementScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      ((snapshot.data as GetAllAchievementState)
-                              .achievementList
+                      ((snapshot.data as GetAllEducationState)
+                              .educationList
                               .data
                               .isEmpty)
                           ? const Text("chưa có data")
@@ -97,28 +98,27 @@ class _AchievementScreenState extends State<AchievementScreen> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            AchievementDetailScreen(
-                                                achievementID: (snapshot.data
-                                                        as GetAllAchievementState)
-                                                    .achievementList
+                                            EducationDetailScreen(
+                                                educationID: (snapshot.data
+                                                        as GetAllEducationState)
+                                                    .educationList
                                                     .data[index]
                                                     .id),
                                       ));
                                 },
-                                child: achievementItem(
+                                child: educationItem(
                                     context,
-                                    (snapshot.data as GetAllAchievementState)
-                                        .achievementList
+                                    (snapshot.data as GetAllEducationState)
+                                        .educationList
                                         .data[index]),
                               ),
                               separatorBuilder: (context, index) => SizedBox(
                                 height: size.height * 0.02,
                               ),
-                              itemCount:
-                                  (snapshot.data as GetAllAchievementState)
-                                      .achievementList
-                                      .data
-                                      .length,
+                              itemCount: (snapshot.data as GetAllEducationState)
+                                  .educationList
+                                  .data
+                                  .length,
                             ),
                     ],
                   ),
@@ -127,7 +127,7 @@ class _AchievementScreenState extends State<AchievementScreen> {
             ),
           );
         } else {
-          return const SplashScreen();
+          return const LoadingScreen();
         }
       },
     );

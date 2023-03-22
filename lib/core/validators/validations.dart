@@ -54,4 +54,12 @@ class Validations {
     }
     return false;
   }
+
+  static bool isValidCertificationTime(String? dateReceived) {
+    int date = DateTime.now().year - int.parse(dateReceived!.split("-")[2]);
+    if (date >= 3) {
+      return true;
+    }
+    return false;
+  }
 }

@@ -1,18 +1,29 @@
+import 'package:elssit/core/utils/color_constant.dart';
 import 'package:elssit/presentation/account_screen/account_screen.dart';
-import 'package:elssit/presentation/achievement_detail_screen/achievement_detail_screen.dart';
-import 'package:elssit/presentation/achievement_detail_screen/achievement_screen.dart';
-import 'package:elssit/presentation/achievement_detail_screen/add_new_achievement_screen.dart';
+import 'package:elssit/presentation/achievement_screen/achievement_detail_screen.dart';
+import 'package:elssit/presentation/achievement_screen/achievement_screen.dart';
+import 'package:elssit/presentation/achievement_screen/add_new_achievement_screen.dart';
 import 'package:elssit/presentation/bottom_bar_navigation/bottom_bar_navigation.dart';
-import 'package:elssit/presentation/certification_detail_screen/add_new_certification_screen.dart';
-import 'package:elssit/presentation/certification_detail_screen/certification_detail_screen.dart';
-import 'package:elssit/presentation/certification_detail_screen/certification_screen.dart';
+
+import 'package:elssit/presentation/certification_screen/widgets/add_new_certification_screen.dart';
+import 'package:elssit/presentation/certification_screen/widgets/certification_detail_screen.dart';
+import 'package:elssit/presentation/certification_screen/certification_screen.dart';
+
 import 'package:elssit/presentation/contact_detail_screen/contact_detail_screen.dart';
-import 'package:elssit/presentation/education_detail_screen/education_detail_screen.dart';
+import 'package:elssit/presentation/education_screen/education_screen.dart';
+import 'package:elssit/presentation/education_screen/widgets/add_new_education_screen.dart';
 import 'package:elssit/presentation/forgot_password_screen/forgot_password_screen.dart';
 import 'package:elssit/presentation/indentification_information_screen/indentification_information_screen.dart';
+import 'package:elssit/presentation/loading_screen/loading_screen.dart';
 import 'package:elssit/presentation/onboarding_screen/onboarding_screen.dart';
+import 'package:elssit/presentation/package_screen.dart/package_screen.dart';
+import 'package:elssit/presentation/schedule_screen/schedule_screen.dart';
+import 'package:elssit/presentation/service_screen/service_detail_screen.dart';
 import 'package:elssit/presentation/sign_up_screen/sign_up_screen.dart';
-import 'package:elssit/presentation/work_experience_screen/work_experience_detail_screen.dart';
+import 'package:elssit/presentation/widget/dialog/custom_checkbox.dart';
+import 'package:elssit/presentation/work_experience_screen/widgets/add_new_work_experience_screen.dart';
+import 'package:elssit/presentation/work_experience_screen/widgets/work_experience_detail_screen.dart';
+import 'package:elssit/presentation/work_experience_screen/work_experience_screen.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -172,23 +183,28 @@ class _MyAppState extends State<MyApp> {
             '/signUpScreen': (context) => const SignupScreen(),
             '/homeScreen': (context) =>
                 BottomBarNavigation(selectedIndex: 0, isBottomNav: true),
+            '/scheduleScreen': (context) =>
+                BottomBarNavigation(selectedIndex: 2, isBottomNav: true),
             '/accountScreen': (context) =>
                 BottomBarNavigation(selectedIndex: 3, isBottomNav: true),
             '/contactDetailScreen': (context) => const ContactDetailScreen(),
             '/indentificationInformationScreen': (context) =>
                 const IndentificationInformationScreen(),
-            '/educationDetailScreen': (context) =>
-                const EducationDetailScreen(),
-            '/certificationDetailScreen': (context) =>
-                const CertificationScreen(),
-            '/achievementDetailScreen': (context) => const AchievementScreen(),
-            '/addNewAchievementScreen': (context) =>
-                const AddNewAchievementScreen(),
+            '/educationScreen': (context) => const EducationScreen(),
+            '/addNewEducationScreen': (context) =>
+                const AddNewEducationScreen(),
+            '/certificationScreen': (context) => const CertificationScreen(),
             '/addNewCertificationScreen': (context) =>
                 const AddNewCertificationScreen(),
-            '/workExperienceDetailScreen': (context) =>
-                const WorkExperienceDetailScreen(),
-            '/achievementScreen': (context) => const AchievementScreen(),
+            // '/addNewAchievementScreen': (context) =>
+            //     const AddNewAchievementScreen(),
+            // '/achievementScreen': (context) => const AchievementScreen(),
+            '/addNewWorkExperienceScreen': (context) =>
+                const AddNewWorkExperienceScreen(),
+            '/workExperienceScreen': (context) => const WorkExperienceSreen(),
+
+            '/packageScreen': (context) => const PackageScreen(),
+            '/serviceDetailScreen': (context) => const ServiceDetailScreen(),
           },
         ),
       );
