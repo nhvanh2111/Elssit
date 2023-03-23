@@ -53,7 +53,7 @@ class _JobDescriptionPanelState extends State<JobDescriptionPanel> {
                 ),
               ),
               SizedBox(
-                height: size.height * 0.1,
+                height: size.height * 0.12,
               ),
             ],
           ),

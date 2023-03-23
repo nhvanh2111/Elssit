@@ -6,3 +6,10 @@ String email = "";
 String sitterID = "";
 String sitterName = "";
 String idString = "";
+
+  class abc{
+  static const a=5;
+  static void abhd(){
+    
+  }
+}

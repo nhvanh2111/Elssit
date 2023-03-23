@@ -1,10 +1,11 @@
+import 'package:elssit/core/models/booking_models/booking.dart';
 import 'package:elssit/core/utils/image_constant.dart';
 import 'package:flutter/Material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/utils/color_constant.dart';
 
-Widget requestItem(BuildContext context) {
+Widget requestItem(BuildContext context, Booking booking) {
   var size = MediaQuery.of(context).size;
   return Container(
     color: Colors.white,
@@ -33,7 +34,7 @@ Widget requestItem(BuildContext context) {
               SizedBox(
                 width: size.width * 0.6,
                 child: Text(
-                  "Ngô Thị Thanh Ngân",
+                 booking.elderDto.fullName,
                   style: GoogleFonts.roboto(
                     fontSize: size.height * 0.022,
                     fontWeight: FontWeight.bold,
@@ -45,7 +46,7 @@ Widget requestItem(BuildContext context) {
                 height: size.height * 0.01,
               ),
               Text(
-                "23 Tuổi | Nữ",
+               '${DateTime.now().year-booking.elderDto.dob.year} Tuổi | ${booking.elderDto.gender}',
                 style: GoogleFonts.roboto(
                   fontSize: size.height * 0.022,
                   fontWeight: FontWeight.w400,
