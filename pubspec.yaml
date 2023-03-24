@@ -60,6 +60,7 @@ dependencies:
   age_calculator: ^1.0.0
   loading_animation_widget:
   quickalert:
+  money_formatter:
 dev_dependencies:
   flutter_test:
     sdk: flutter

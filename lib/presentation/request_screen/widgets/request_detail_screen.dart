@@ -8,6 +8,7 @@ import 'package:flutter/Material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:money_formatter/money_formatter.dart';
 
 import '../../../core/utils/color_constant.dart';
 import 'job_description_panel.dart';
@@ -237,7 +238,7 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                 //             child: const Text("Chấp nhận"),
                 //           ),
                 //         ),
-                //       ],
+                //       ], 
                 //     ),
                 //   ),
                 // ),
@@ -328,7 +329,8 @@ class _RequestDetailScreenState extends State<RequestDetailScreen> {
                               height: size.height * 0.015,
                             ),
                             Text(
-                              "${bookingDetail.totalPrice}/ ngày",
+                              "${MoneyFormatter(amount: bookingDetail.totalPrice
+                                                ).output.withoutFractionDigits}/ ngày",
                               style: GoogleFonts.roboto(
                                 fontWeight: FontWeight.w500,
                                 fontSize: size.height * 0.022,
