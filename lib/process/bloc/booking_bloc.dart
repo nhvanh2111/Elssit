@@ -1,13 +1,13 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:convert';
 
-import 'package:flutter/Material.dart';
+import 'package:elssit/core/data/api/booking_api.dart';
+import 'package:elssit/core/models/booking_models/booking.dart';
+import 'package:elssit/core/models/booking_models/booking_detail.dart';
 import 'package:http/http.dart' as http;
-import 'package:jwt_decode/jwt_decode.dart';
+
 import '../../core/models/test_models/test_schedule_model.dart';
 import '../../core/utils/globals.dart' as globals;
-import '../../core/validators/validations.dart';
 import '../event/booking_event.dart';
 import '../state/booking_state.dart';
 
@@ -15,14 +15,28 @@ class BookingBloc {
   final eventController = StreamController<BookingEvent>();
 
   final stateController = StreamController<BookingState>();
-
   BookingBloc() {
-    eventController.stream.listen((event) {
+    eventController.stream.listen((event) async {
       if (event is TestGetAllBookingEvent) {
         testGetAll();
       }
       if (event is OtherBookingEvent) {
         stateController.sink.add(OtherBookingState()); //Test schedule event
+      }
+      if (event is GetAllBookingWattingEvent) {
+        List<Booking> rs = await BookingApi.getAllWaittingBooking();
+        if (rs.isNotEmpty) {
+          stateController
+              .add(HaveBookingWattingState(listBookingWatting: rs));
+        }else{
+          stateController.sink.add(NotHaveDataState());
+        }
+      }
+      if(event is GetBookingDetailEvent){
+        BookingDetail? bookingDetail = await BookingApi.getBookingDetail(event.idBooking);
+        if(bookingDetail!=null){
+          stateController.sink.add(HaveBookingDetailState(bookingDetail: bookingDetail));
+        }
       }
     });
   }
