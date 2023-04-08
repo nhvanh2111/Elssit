@@ -1,5 +1,6 @@
 import 'package:elssit/presentation/home_screen/widgets/balance_panel.dart';
 import 'package:elssit/presentation/home_screen/widgets/work_panel.dart';
+import 'package:elssit/presentation/schedule_screen/widgets/booking_item_widget.dart';
 import 'package:flutter/Material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -16,6 +17,36 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool _showAccountBalance = false;
   int tabIndex = 0;
+  int indexSchToday = 0;
+  var items = [
+    {"name": "Nguyen Thi Le", "time": "8:00-12:00", "address": "2B/HoChiMinh"},
+    {"name": "Nguyen Van A", "time": "8:00-12:00", "address": "2B/HoChiMinh"},
+    {"name": "Nguyen Van B", "time": "8:00-12:00", "address": "2B/HoChiMinh"}
+  ];
+  int lengthListDataTmp = 0;
+  PageController _pageController = PageController();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    //Getdata toDay
+    lengthListDataTmp = items.length;
+  }
+
+  nextSchedu() {
+    setState(() {
+      indexSchToday++;
+      _pageController.jumpToPage(indexSchToday);
+    });
+  }
+
+  backSchedu() {
+    setState(() {
+      indexSchToday--;
+      _pageController.jumpToPage(indexSchToday);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -27,7 +58,6 @@ class _HomeScreenState extends State<HomeScreen> {
             tabIndex = value;
           });
         },
-
         tabs: [
           Container(
             width: size.width * 0.4,
@@ -50,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
               textAlign: TextAlign.center,
               style: GoogleFonts.roboto(
                 fontWeight: FontWeight.bold,
-                color:(tabIndex == 0) ? Colors.white : Colors.black,
+                color: (tabIndex == 0) ? Colors.white : Colors.black,
                 fontSize: 17,
                 height: 1,
               ),
@@ -77,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
               textAlign: TextAlign.center,
               style: GoogleFonts.roboto(
                 fontWeight: FontWeight.bold,
-                color:(tabIndex == 1) ? Colors.white : Colors.black,
+                color: (tabIndex == 1) ? Colors.white : Colors.black,
                 fontSize: 17,
                 height: 1,
               ),
@@ -254,6 +284,145 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
+                          "Lịch trình hôm nay",
+                          style: GoogleFonts.roboto(
+                            fontSize: size.height * 0.024,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                        // color: Colors.red,
+                        margin: EdgeInsets.symmetric(
+                            horizontal: size.width * 0.1,
+                            vertical: size.height * 0.02),
+                        height: size.height * 0.15,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Stack(
+                          children: [
+                            PageView.custom(
+                              controller: _pageController,
+                              childrenDelegate: SliverChildBuilderDelegate(
+                                (BuildContext context, int index) {
+                                  // return bookingItemWidget(context," value[index].title");
+                                  return Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Image.asset(
+                                            ImageConstant.icScheduleItem,
+                                            width: size.height * 0.1,
+                                            height: size.height * 0.1,
+                                          ),
+                                          Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                '${items[index]["name"]}',
+                                                style: GoogleFonts.roboto(
+                                                  color: Colors.black,
+                                                  fontSize: size.height * 0.02,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: size.height * 0.02,
+                                              ),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.spaceBetween,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Icon(
+                                                    Icons.access_time,
+                                                    size: size.height * 0.03,
+                                                    color: Colors.black
+                                                        .withOpacity(0.8),
+                                                  ),
+                                                  Text(
+                                                    "${items[index]["time"]}",
+                                                    style: GoogleFonts.roboto(
+                                                      color: Colors.black87,
+                                                      fontSize:
+                                                          size.height * 0.018,
+                                                      fontWeight:
+                                                          FontWeight.w300,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              SizedBox(
+                                                height: size.height * 0.02,
+                                              ),
+                                              // Text(''),
+                                              Text(
+                                                  '${items[index]["address"]}'),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                                childCount: items.length,
+                                // findChildIndexCallback: (Key key) {
+                                //   final ValueKey<String> valueKey =
+                                //       key as ValueKey<String>;
+                                //   final String data = valueKey.value;
+                                //   return items.indexOf(data);
+                                // }
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                indexSchToday != 0
+                                    ? InkWell(
+                                        onTap: backSchedu,
+                                        child: SizedBox(
+                                          height: double.infinity,
+                                          width: 20,
+                                          child: Icon(
+                                              Icons.arrow_back_ios_outlined),
+                                        ),
+                                      )
+                                    : SizedBox.shrink(),
+                                indexSchToday != lengthListDataTmp - 1
+                                    ? InkWell(
+                                        onTap: nextSchedu,
+                                        child: SizedBox(
+                                          height: double.infinity,
+                                          width: 20,
+                                          child: Icon(
+                                              Icons.arrow_forward_ios_outlined),
+                                        ),
+                                      )
+                                    : SizedBox.shrink(),
+                              ],
+                            )
+                          ],
+                        )),
+                    // ContainerD(size: size, indexSchToday: indexSchToday, lengthListDataTmp: lengthListDataTmp),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: size.width * 0.05,
+                      ),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
                           "Phím tắt",
                           style: GoogleFonts.roboto(
                             fontSize: size.height * 0.024,
@@ -282,14 +451,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     GestureDetector(
-                                      onTap: () {
-                                      },
+                                      onTap: () {},
                                       child: Container(
                                         width: size.width * 0.15,
                                         height: size.width * 0.15,
                                         decoration: BoxDecoration(
-                                          color:
-                                          ColorConstant.yellow1.withOpacity(0.1),
+                                          color: ColorConstant.yellow1
+                                              .withOpacity(0.1),
                                           shape: BoxShape.circle,
                                         ),
                                         alignment: Alignment.center,
@@ -332,8 +500,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                         width: size.width * 0.15,
                                         height: size.width * 0.15,
                                         decoration: BoxDecoration(
-                                          color:
-                                          ColorConstant.blueSky1.withOpacity(0.1),
+                                          color: ColorConstant.blueSky1
+                                              .withOpacity(0.1),
                                           shape: BoxShape.circle,
                                         ),
                                         alignment: Alignment.center,
@@ -368,14 +536,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     GestureDetector(
-                                      onTap: () {
-                                      },
+                                      onTap: () {},
                                       child: Container(
                                         width: size.width * 0.15,
                                         height: size.width * 0.15,
                                         decoration: BoxDecoration(
-                                          color:
-                                          ColorConstant.purple1.withOpacity(0.1),
+                                          color: ColorConstant.purple1
+                                              .withOpacity(0.1),
                                           shape: BoxShape.circle,
                                         ),
                                         alignment: Alignment.center,
@@ -413,12 +580,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                       width: size.width * 0.15,
                                       height: size.width * 0.15,
                                       decoration: BoxDecoration(
-                                        color: ColorConstant.red1.withOpacity(0.1),
+                                        color:
+                                            ColorConstant.red1.withOpacity(0.1),
                                         shape: BoxShape.circle,
                                       ),
                                       alignment: Alignment.center,
                                       child: ImageIcon(
-                                        AssetImage(ImageConstant.icManageElder1),
+                                        AssetImage(
+                                            ImageConstant.icManageElder1),
                                         color: ColorConstant.red1,
                                       ),
                                     ),
@@ -466,7 +635,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                       width: size.width * 0.15,
                                       height: size.width * 0.15,
                                       decoration: BoxDecoration(
-                                        color: ColorConstant.blue1.withOpacity(0.1),
+                                        color: ColorConstant.blue1
+                                            .withOpacity(0.1),
                                         shape: BoxShape.circle,
                                       ),
                                       alignment: Alignment.center,
@@ -643,7 +813,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       margin: EdgeInsets.only(
                         left: size.width * 0.05,
                         right: size.width * 0.05,
-                        top: size.height*0.02,
+                        top: size.height * 0.02,
                       ),
                       width: size.width,
                       decoration: BoxDecoration(
@@ -653,48 +823,51 @@ class _HomeScreenState extends State<HomeScreen> {
                       alignment: Alignment.center,
                       child: createTabBar(),
                     ),
-                    SizedBox(height: size.height*0.03,),
-                    SizedBox(height: size.height*0.5,
-                    child: TabBarView(children: [
-                      Material(
-                        child: Container(
-                          color: Colors.white,
-                          width: size.width,
-                          child: SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const WorkPanel(),
-                                SizedBox(
-                                  height: size.height * 0.03,
+                    SizedBox(
+                      height: size.height * 0.03,
+                    ),
+                    SizedBox(
+                      height: size.height * 0.5,
+                      child: TabBarView(
+                        children: [
+                          Material(
+                            child: Container(
+                              color: Colors.white,
+                              width: size.width,
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const WorkPanel(),
+                                    SizedBox(
+                                      height: size.height * 0.03,
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      Material(
-                        child: Container(
-                          color: Colors.white,
-                          width: size.width,
-                          child: SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                const BalancePanel(),
-                                SizedBox(
-                                  height: size.height * 0.03,
+                          Material(
+                            child: Container(
+                              color: Colors.white,
+                              width: size.width,
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    const BalancePanel(),
+                                    SizedBox(
+                                      height: size.height * 0.03,
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-
-
-                    ],),
                     ),
                   ],
                 ),
