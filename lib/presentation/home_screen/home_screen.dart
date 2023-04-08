@@ -293,128 +293,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                    Container(
-                        // color: Colors.red,
-                        margin: EdgeInsets.symmetric(
-                            horizontal: size.width * 0.1,
-                            vertical: size.height * 0.02),
-                        height: size.height * 0.15,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Stack(
-                          children: [
-                            PageView.custom(
-                              controller: _pageController,
-                              childrenDelegate: SliverChildBuilderDelegate(
-                                (BuildContext context, int index) {
-                                  // return bookingItemWidget(context," value[index].title");
-                                  return Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Image.asset(
-                                            ImageConstant.icScheduleItem,
-                                            width: size.height * 0.1,
-                                            height: size.height * 0.1,
-                                          ),
-                                          Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                '${items[index]["name"]}',
-                                                style: GoogleFonts.roboto(
-                                                  color: Colors.black,
-                                                  fontSize: size.height * 0.02,
-                                                  fontWeight: FontWeight.w400,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                height: size.height * 0.02,
-                                              ),
-                                              Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.spaceBetween,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
-                                                children: [
-                                                  Icon(
-                                                    Icons.access_time,
-                                                    size: size.height * 0.03,
-                                                    color: Colors.black
-                                                        .withOpacity(0.8),
-                                                  ),
-                                                  Text(
-                                                    "${items[index]["time"]}",
-                                                    style: GoogleFonts.roboto(
-                                                      color: Colors.black87,
-                                                      fontSize:
-                                                          size.height * 0.018,
-                                                      fontWeight:
-                                                          FontWeight.w300,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              SizedBox(
-                                                height: size.height * 0.02,
-                                              ),
-                                              // Text(''),
-                                              Text(
-                                                  '${items[index]["address"]}'),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  );
-                                },
-                                childCount: items.length,
-                                // findChildIndexCallback: (Key key) {
-                                //   final ValueKey<String> valueKey =
-                                //       key as ValueKey<String>;
-                                //   final String data = valueKey.value;
-                                //   return items.indexOf(data);
-                                // }
-                              ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                indexSchToday != 0
-                                    ? InkWell(
-                                        onTap: backSchedu,
-                                        child: SizedBox(
-                                          height: double.infinity,
-                                          width: 20,
-                                          child: Icon(
-                                              Icons.arrow_back_ios_outlined),
-                                        ),
-                                      )
-                                    : SizedBox.shrink(),
-                                indexSchToday != lengthListDataTmp - 1
-                                    ? InkWell(
-                                        onTap: nextSchedu,
-                                        child: SizedBox(
-                                          height: double.infinity,
-                                          width: 20,
-                                          child: Icon(
-                                              Icons.arrow_forward_ios_outlined),
-                                        ),
-                                      )
-                                    : SizedBox.shrink(),
-                              ],
-                            )
-                          ],
-                        )),
+                    _scheduleToday(size),
                     // ContainerD(size: size, indexSchToday: indexSchToday, lengthListDataTmp: lengthListDataTmp),
                     Padding(
                       padding: EdgeInsets.only(
@@ -875,6 +754,175 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Container _scheduleToday(Size size) {
+    return Container(
+      margin: EdgeInsets.symmetric(
+          horizontal: size.width * 0.1, vertical: size.height * 0.02),
+      height: size.height * 0.15,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Stack(
+        children: [
+          PageView.custom(
+            controller: _pageController,
+            childrenDelegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                // return bookingItemWidget(context," value[index].title");
+
+                return ListTile(
+                  contentPadding: EdgeInsets.all(size.width*0.05),
+                  leading: Image.asset(
+                    ImageConstant.icScheduleItem,
+                    width: size.height * 0.15,
+                    height: size.height * 0.15,
+                  ),
+                  title: Text(
+                    "${items[index]["name"]}",
+                    style: GoogleFonts.roboto(
+                      color: Colors.black87,
+                      fontSize: size.height * 0.02,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  subtitle: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: size.height*0.01,),
+                       Row(
+                            
+                              children: [
+                                Icon(
+                                  Icons.access_time,
+                                  size: size.height * 0.03,
+                                  color: Colors.black.withOpacity(0.8),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  "${items[index]["time"]}",
+                                  style: GoogleFonts.roboto(
+                                    color: Colors.black87,
+                                    fontSize: size.height * 0.018,
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                ),
+                              ],
+                            ),SizedBox(height: size.height*0.01,),
+                       Text(
+                        "${items[index]["address"]}",
+                        style: GoogleFonts.roboto(
+                          color: Colors.black87,
+                          fontSize: size.height * 0.018,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          ImageConstant.icScheduleItem,
+                          width: size.height * 0.1,
+                          height: size.height * 0.1,
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${items[index]["name"]}',
+                              style: GoogleFonts.roboto(
+                                color: Colors.black,
+                                fontSize: size.height * 0.02,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                            SizedBox(
+                              height: size.height * 0.02,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.access_time,
+                                  size: size.height * 0.03,
+                                  color: Colors.black.withOpacity(0.8),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  "${items[index]["time"]}",
+                                  style: GoogleFonts.roboto(
+                                    color: Colors.black87,
+                                    fontSize: size.height * 0.018,
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: size.height * 0.02,
+                            ),
+                            // Text(''),
+                            Text('${items[index]["address"]}'),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              childCount: items.length,
+              // findChildIndexCallback: (Key key) {
+              //   final ValueKey<String> valueKey =
+              //       key as ValueKey<String>;
+              //   final String data = valueKey.value;
+              //   return items.indexOf(data);
+              // }
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              indexSchToday != 0
+                  ? InkWell(
+                      onTap: backSchedu,
+                      child: SizedBox(
+                        height: double.infinity,
+                        width: 20,
+                        child: Icon(Icons.arrow_back_ios_outlined),
+                      ),
+                    )
+                  : SizedBox.shrink(),
+              indexSchToday != lengthListDataTmp - 1
+                  ? InkWell(
+                      onTap: nextSchedu,
+                      child: SizedBox(
+                        height: double.infinity,
+                        width: 20,
+                        child: Icon(Icons.arrow_forward_ios_outlined),
+                      ),
+                    )
+                  : SizedBox.shrink(),
+            ],
+          )
+        ],
       ),
     );
   }
